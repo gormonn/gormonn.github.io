@@ -1,4 +1,12 @@
-# gormonn.github.io
+# Introdution
+Hello! My name is Dmitriy, and this is a by developer blog.
+Now I work in a local company office, but I'm looking for a warmer place.
+
+I need to blog primarily in order to reflect my development and research experience on paper. I started doing this in Google Doc, but realized that it was not effective.
+
+Perhaps in the future, I will convert this page into an easy-to-read blog.
+
+# Diary
 
 ## 28.01.21
 ### Nodejs + Systemd (Nodejs as service)
