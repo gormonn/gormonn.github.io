@@ -26,5 +26,6 @@ sudo chmod 664 /etc/systemd/system/${s}.service
 sudo systemctl daemon-reload
 sudo systemctl enable ${s}
 ```
-* Prototype Mixins [app-watchdog](https://github.com/gormonn/app-watchdog)
+* Prototype Mixins in [app-watchdog](https://github.com/gormonn/app-watchdog)
+
 *The main idea was to make this library "modular". To work with various USB Watchdog devices. To achieve this goal, I decided to use mixins.*
