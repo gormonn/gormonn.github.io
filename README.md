@@ -6,6 +6,8 @@ I need to blog primarily in order to reflect my development and research experie
 
 Perhaps in the future, I will convert this page into an easy-to-read blog.
 
+[You can buy me an apple](https://www.buymeacoffee.com/gormonn)
+
 # Diary
 
 ## 28.01.21
