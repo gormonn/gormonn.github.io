@@ -4,7 +4,7 @@ Now I work in a local company office, but I'm looking for a warmer place.
 
 I need to blog primarily in order to reflect my development and research experience on paper. I started doing this in Google Doc, but realized that it was not effective.
 
-Perhaps in the future, I will convert this page into an easy-to-read blog.
+Perhaps in the future, I will convert this page into an easy-to-read blog. And I will transfer the accumulated experience from Google Docs here (I'm too lazy, really).
 
 [You can buy me an apple](https://www.buymeacoffee.com/gormonn)
 
