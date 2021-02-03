@@ -1,5 +1,5 @@
 # Introdution
-Hello! My name is Dmitriy, and this is a by developer blog.
+Hello! My name is Dmitry and this is my development blog.
 Now I work in a local company office, but I'm looking for a warmer place.
 
 I need to blog primarily in order to reflect my development and research experience on paper. I started doing this in Google Doc, but realized that it was not effective.
