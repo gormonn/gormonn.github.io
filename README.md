@@ -6,7 +6,7 @@ I need to blog primarily in order to reflect my development and research experie
 
 Perhaps in the future, I will convert this page into an easy-to-read blog. And I will transfer the accumulated experience from Google Docs here (I'm too lazy, really).
 
-[You can buy me an apple](https://www.buymeacoffee.com/gormonn)
+<!--[You can buy me an apple](https://www.buymeacoffee.com/gormonn)-->
 
 # Builds
 *  [WIP] [[source](https://github.com/gormonn/react-practice-list-edit-sort-filter)] [React list](https://gormonn.github.io/react-practice-list-edit-sort-filter/)
