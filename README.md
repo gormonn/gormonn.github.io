@@ -8,6 +8,10 @@ Perhaps in the future, I will convert this page into an easy-to-read blog. And I
 
 [You can buy me an apple](https://www.buymeacoffee.com/gormonn)
 
+# Builds
+* [React list](https://gormonn.github.io/react-practice-list-edit-sort-filter/) [source](https://github.com/gormonn/react-practice-list-edit-sort-filter) WIP
+
+
 # Diary
 
 ## 28.01.21
