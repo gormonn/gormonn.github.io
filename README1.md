@@ -9,8 +9,8 @@ Perhaps in the future, I will convert this page into an easy-to-read blog. And I
 <!--[You can buy me an apple](https://www.buymeacoffee.com/gormonn)-->
 
 # Builds
-*  [WIP] [[source](https://github.com/gormonn/react-practice-list-edit-sort-filter)] [React list](https://gormonn.github.io/react-practice-list-edit-sort-filter/)
-
+* [WIP] [[source](https://github.com/gormonn/react-practice-list-edit-sort-filter)] [React list](https://gormonn.github.io/react-practice-list-edit-sort-filter/)
+* [TicTacToe](https://gormonn.github.io/tic-tac-toe/)
 
 # Diary
 
