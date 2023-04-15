@@ -11,6 +11,7 @@ Perhaps in the future, I will convert this page into an easy-to-read blog. And I
 # Builds
 * [WIP] [[source](https://github.com/gormonn/react-practice-list-edit-sort-filter)] [React list](https://gormonn.github.io/react-practice-list-edit-sort-filter/)
 * [TicTacToe Game](https://gormonn.github.io/tic-tac-toe/) [[source](https://github.com/gormonn/tic-tac-toe)]
+* [WIP] [Mines Game (source)](https://github.com/gormonn/mines-effector-solid) with Feature Sliced Design, SolidJs, Effector
 
 # Diary
 
