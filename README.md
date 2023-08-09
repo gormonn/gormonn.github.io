@@ -1,45 +1,49 @@
-# Introdution
-Hello! My name is Dmitry and this is my development blog.
-Now I work in a local company office, but I'm looking for a warmer place.
+<p align="center">
+  <a href="https://www.gatsbyjs.com/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts">
+    <img alt="Gatsby" src="https://www.gatsbyjs.com/Gatsby-Monogram.svg" width="60" />
+  </a>
+</p>
+<h1 align="center">
+  Gatsby Minimal TypeScript Starter
+</h1>
 
-I need to blog primarily in order to reflect my development and research experience on paper. I started doing this in Google Doc, but realized that it was not effective.
+## 🚀 Quick start
 
-Perhaps in the future, I will convert this page into an easy-to-read blog. And I will transfer the accumulated experience from Google Docs here (I'm too lazy, really).
+1.  **Create a Gatsby site.**
 
-<!--[You can buy me an apple](https://www.buymeacoffee.com/gormonn)-->
+    Use the Gatsby CLI to create a new site, specifying the minimal TypeScript starter.
 
-# Builds
-* [WIP] [[source](https://github.com/gormonn/react-practice-list-edit-sort-filter)] [React list](https://gormonn.github.io/react-practice-list-edit-sort-filter/)
-* [TicTacToe Game](https://gormonn.github.io/tic-tac-toe/) [[source](https://github.com/gormonn/tic-tac-toe)]
-* [WIP] [Mines Game (source)](https://github.com/gormonn/mines-effector-solid) with Feature Sliced Design, SolidJs, Effector
+    ```shell
+    # create a new Gatsby site using the minimal TypeScript starter
+    npm init gatsby -- -ts
+    ```
 
-# Diary
+2.  **Start developing.**
 
-## 28.01.21
-### Nodejs + Systemd (Nodejs as service)
-```
-#!/bin/bash
-path="$NVM_DIR/versions/node/v12.19.0/bin"
-s='monitoring-nc'
-echo "
-[Unit]
-Description=Monitoring-NC
+    Navigate into your new site’s directory and start it up.
 
-[Service]
-Type=simple
-Restart=on-failure
-WorkingDirectory=$(pwd)
-ExecStart=$path/node $(pwd)/dist/server.js
+    ```shell
+    cd my-gatsby-site/
+    npm run develop
+    ```
 
-[Install]
-WantedBy=multi-user.target
-" > ${s}.service
+3.  **Open the code and start customizing!**
 
-sudo cp ./monitoring-nc.service /etc/systemd/system/${s}.service
-sudo chmod 664 /etc/systemd/system/${s}.service
+    Your site is now running at http://localhost:8000!
 
-sudo systemctl daemon-reload
-sudo systemctl enable ${s}
-```
-### Prototype Mixins in [app-watchdog](https://github.com/gormonn/app-watchdog)
-The main idea was to make this library "modular". To work with various USB Watchdog devices. To achieve this goal, I decided to use mixins.
+    Edit `src/pages/index.tsx` to see your site update in real-time!
+
+4.  **Learn more**
+
+    - [Documentation](https://www.gatsbyjs.com/docs/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
+    - [Tutorials](https://www.gatsbyjs.com/docs/tutorial/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
+    - [Guides](https://www.gatsbyjs.com/docs/how-to/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
+    - [API Reference](https://www.gatsbyjs.com/docs/api-reference/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
+    - [Plugin Library](https://www.gatsbyjs.com/plugins?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
+    - [Cheat Sheet](https://www.gatsbyjs.com/docs/cheat-sheet/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter-ts)
+
+## 🚀 Quick start (Netlify)
+
+Deploy this starter with one click on [Netlify](https://app.netlify.com/signup):
+
+[<img src="https://www.netlify.com/img/deploy/button.svg" alt="Deploy to Netlify" />](https://app.netlify.com/start/deploy?repository=https://github.com/gatsbyjs/gatsby-starter-minimal-ts)
