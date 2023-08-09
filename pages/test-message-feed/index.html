@@ -1,15 +1,15 @@
 <!doctype html>
 <html lang="en">
   <head>
-<!--    <base href="https://gormonn.github.io/pages/test-message-feed/" />-->
-
-    <base href="/pages/test-message-feed/">
+    <script>
+      window.BASE_URL = window.location.pathname;
+    </script>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="${BASE_URL}vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React + TS</title>
-    <script type="module" crossorigin src="/assets/index-3a007718.js"></script>
-    <link rel="stylesheet" href="/assets/index-6092f378.css">
+    <script type="module" crossorigin src="${BASE_URL}assets/index-3a007718.js"></script>
+    <link rel="stylesheet" href="${BASE_URL}assets/index-6092f378.css">
   </head>
   <body>
     <div id="root"></div>
