@@ -1,3 +1,0 @@
-[submodule "pages/test-message-feed"]
-	path = pages/test-message-feed
-	url = git@github.com:gormonn/test-message-feed.git
