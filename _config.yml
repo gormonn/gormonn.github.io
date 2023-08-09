@@ -1,2 +1,5 @@
 
 markdown: kramdown
+baseurl: /pages
+
+url: https://michaelpw.github.io/
