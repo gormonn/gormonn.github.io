@@ -1,1 +1,1 @@
-![GitHub Readme](./README.md)
+![GitHub Readme](gormonn/README.md)
