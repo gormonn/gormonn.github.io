@@ -2,15 +2,17 @@
 <html>
 <head>
     <title>Dmitrii Chernikho</title>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/showdown@<version tag>/dist/showdown.min.js"></script>
 </head>
 <body>
-    <div id="readme-content"></div>
+    <div id="readme-content">Loading... Please wait.</div>
     <script>
+        const converter = new showdown.Converter();
         fetch('https://raw.githubusercontent.com/gormonn/gormonn/main/README.md')
             .then(response => response.text())
             .then(text => {
                 // Вставьте содержимое README.md в элемент с id "readme-content"
-                document.getElementById('readme-content').innerHTML = text;
+                document.getElementById('readme-content').innerHTML = converter.makeHtml(text);
             })
             .catch(error => {
                 console.error('Failed to load README.md:', error);
