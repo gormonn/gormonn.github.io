@@ -5,7 +5,7 @@
   "author": "Dmitriy Aleksandrovich Chernukho",
   "scripts": {
     "serve": "serve ./",
-    "css": "sass --style=compressed src/style.scss ./style.css"
+    "css": "sass --watch --style=compressed src/style.scss ./style.css"
   },
   "dependencies": {},
   "devDependencies": {
