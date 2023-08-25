@@ -1,1 +1,0 @@
-- add gtag for "gatsby-plugin-google-gtag"
