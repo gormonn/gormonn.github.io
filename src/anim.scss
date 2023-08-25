@@ -1,0 +1,14 @@
+
+@mixin frames($name, $frames) {
+  @keyframes #{$name} {
+    @for $i from 0 through length($frames) - 1 {
+      #{$i * (100% / (length($frames) - 1))} {
+        content: nth($frames, $i + 1);
+      }
+    }
+  }
+}
+
+
+@include frames('loading-before', ('⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧'));
+@include frames('loading-after', ('','.','..','...','..','.'));

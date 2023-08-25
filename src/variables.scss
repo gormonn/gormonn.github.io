@@ -3,5 +3,7 @@ $white: #fff;
 :root{
     --black: #1F1F1F;
     --white: #{$white};
-    --white-secondary: #{rgba($white, .5)};
+    --white-75: #{rgba($white, .75)};
+    --white-50: #{rgba($white, .5)};
+    --white-25: #{rgba($white, .25)};
 }

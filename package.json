@@ -7,7 +7,9 @@
     "serve": "serve ./",
     "css": "sass --watch --style=compressed src/style.scss ./style.css"
   },
-  "dependencies": {},
+  "dependencies": {
+    "marked": "^7.0.4"
+  },
   "devDependencies": {
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
