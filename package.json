@@ -11,6 +11,7 @@
   "devDependencies": {
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
+    "normalize.css": "^8.0.1",
     "prettier": "^2.8.8",
     "sass": "^1.66.1",
     "serve": "^14.2.1",

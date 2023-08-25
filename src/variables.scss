@@ -1,0 +1,7 @@
+$white: #fff;
+
+:root{
+    --black: #1F1F1F;
+    --white: #{$white};
+    --white-secondary: #{rgba($white, .5)};
+}
