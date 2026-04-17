@@ -6,15 +6,34 @@
     <title>Dmitrii Chernukho</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&family=JetBrains+Mono:wght@400;500&display=optional" rel="stylesheet">
+    <style>
+        /* Fallback font metric overrides — minimise layout shift before Inter loads */
+        @font-face {
+            font-family: 'Inter-fallback';
+            src: local('Arial');
+            size-adjust: 107%;
+            ascent-override: 90%;
+            descent-override: 22%;
+            line-gap-override: 0%;
+        }
+        @font-face {
+            font-family: 'JetBrainsMono-fallback';
+            src: local('Courier New');
+            size-adjust: 112%;
+            ascent-override: 83%;
+            descent-override: 20%;
+            line-gap-override: 0%;
+        }
+    </style>
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+                        sans: ['Inter', 'Inter-fallback', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'JetBrainsMono-fallback', 'ui-monospace', 'monospace'],
                     },
                 }
             }
@@ -71,22 +90,136 @@
             prose-hr:border-white/10
             prose-li:text-white/70
             prose-blockquote:border-white/20 prose-blockquote:text-white/50">
-            Loading
+
+            <!-- Skeleton -->
+            <div id="skeleton" class="not-prose animate-pulse space-y-3">
+                <div class="h-3 rounded bg-white/8 w-full"></div>
+                <div class="h-3 rounded bg-white/8 w-11/12"></div>
+                <div class="h-3 rounded bg-white/8 w-4/5"></div>
+                <div class="h-3 rounded bg-white/8 w-full"></div>
+                <div class="h-3 rounded bg-white/8 w-10/12"></div>
+                <div class="h-3 rounded bg-white/8 w-3/5"></div>
+                <div class="h-3 rounded bg-white/8 w-full"></div>
+                <div class="h-3 rounded bg-white/8 w-9/12"></div>
+                <div class="h-3 rounded bg-white/8 w-full"></div>
+                <div class="h-3 rounded bg-white/8 w-4/6"></div>
+                <div class="h-3 rounded bg-white/8 w-full"></div>
+                <div class="h-3 rounded bg-white/8 w-11/12"></div>
+                <div class="h-3 rounded bg-white/8 w-5/6"></div>
+                <div class="h-3 rounded bg-white/8 w-full"></div>
+                <div class="h-3 rounded bg-white/8 w-3/4"></div>
+            </div>
+
         </div>
 
     </main>
+
+    <footer class="max-w-[860px] mx-auto px-6 py-10 mt-8 border-t border-white/10">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs font-mono text-white/30">
+            <div>
+                <p class="text-white/50 mb-2 uppercase tracking-widest">Stack</p>
+                <ul class="space-y-1">
+                    <li>HTML + Tailwind CSS CDN</li>
+                    <li>SCSS → style.css (sass)</li>
+                    <li>marked.js — render README</li>
+                    <li>SoundCloud embed</li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-white/50 mb-2 uppercase tracking-widest">Content</p>
+                <ul class="space-y-1">
+                    <li>README fetched from</li>
+                    <li>gormonn/gormonn repo</li>
+                    <li>via GitHub raw API</li>
+                    <li>rendered client-side</li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-white/50 mb-2 uppercase tracking-widest">Deploy</p>
+                <ul class="space-y-1">
+                    <li>Hosted on GitHub Pages</li>
+                    <li>Push → GitHub Actions</li>
+                    <li>→ auto-deploy to main</li>
+                    <li>no build step required</li>
+                </ul>
+            </div>
+        </div>
+        <p class="mt-8 text-xs font-mono text-white/20">
+            © <span id="footer-year"></span> Dmitrii Chernukho
+        </p>
+    </footer>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300" role="dialog" aria-modal="true" aria-label="Image viewer">
+        <button id="lightbox-close" class="absolute top-5 right-5 text-white/50 hover:text-white transition-colors duration-200" aria-label="Close">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+        <img id="lightbox-img" src="" alt="" class="max-w-[90vw] max-h-[90vh] rounded-xl object-contain shadow-2xl scale-95 transition-transform duration-300">
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
+        // Footer year
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+        // README
         fetch('https://raw.githubusercontent.com/gormonn/gormonn/main/README.md')
             .then(response => response.text())
             .then(text => {
                 const content = document.getElementById('readme-content');
                 content.innerHTML = marked.parse(text);
                 content.className = content.className.replace('loading', 'done');
+                const skeleton = document.getElementById('skeleton');
+                if (skeleton) skeleton.remove();
+                initLightbox();
             })
             .catch(error => {
                 console.error('Failed to load README.md:', error);
             });
+
+        // Lightbox
+        function initLightbox() {
+            const lb     = document.getElementById('lightbox');
+            const lbImg  = document.getElementById('lightbox-img');
+            const lbClose = document.getElementById('lightbox-close');
+
+            function open(src, alt) {
+                lbImg.src = src;
+                lbImg.alt = alt || '';
+                lb.classList.remove('opacity-0', 'pointer-events-none');
+                lbImg.classList.remove('scale-95');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function close() {
+                lb.classList.add('opacity-0', 'pointer-events-none');
+                lbImg.classList.add('scale-95');
+                document.body.style.overflow = '';
+            }
+
+            document.getElementById('readme-content').querySelectorAll('img').forEach(img => {
+                img.style.cursor = 'zoom-in';
+
+                // If image is wrapped in a link — intercept the link click
+                const parent = img.closest('a');
+                if (parent) {
+                    parent.addEventListener('click', e => {
+                        e.preventDefault();
+                        const imgExts = /\.(png|jpe?g|gif|webp|svg|avif|bmp)(\?.*)?$/i;
+                        const src = imgExts.test(parent.href) ? parent.href : img.src;
+                        open(src, img.alt);
+                    });
+                } else {
+                    img.addEventListener('click', () => open(img.src, img.alt));
+                }
+            });
+
+            lbClose.addEventListener('click', close);
+            lb.addEventListener('click', e => { if (e.target === lb) close(); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+        }
     </script>
 </body>
 </html>

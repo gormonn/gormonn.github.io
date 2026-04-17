@@ -1,14 +1,61 @@
-@import "anim";
-
 #readme-content {
-    &.loading {
-        &::before {
-            content: '';
-            animation: loading-before .3s infinite;
+    details {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.75rem;
+        padding: 0;
+        margin: 1.25rem 0;
+        background: rgba(255, 255, 255, 0.03);
+        overflow: hidden;
+        transition: background 0.2s ease;
+
+        &[open] {
+            background: rgba(255, 255, 255, 0.05);
+
+            > summary {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+                &::after {
+                    transform: rotate(90deg);
+                }
+            }
         }
+    }
+
+    summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.7);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        user-select: none;
+        transition: color 0.2s ease;
+
+        &::-webkit-details-marker { display: none; }
+
         &::after {
-            content: '';
-            animation: loading-after 1s infinite;
+            content: '›';
+            font-size: 1.1rem;
+            line-height: 1;
+            color: rgba(255, 255, 255, 0.3);
+            transition: transform 0.2s ease, color 0.2s ease;
+            margin-left: auto;
+            flex-shrink: 0;
         }
+
+        &:hover {
+            color: rgba(255, 255, 255, 0.95);
+
+            &::after {
+                color: rgba(255, 255, 255, 0.6);
+            }
+        }
+    }
+
+    details > *:not(summary) {
+        padding: 0.75rem 1rem;
     }
 }
