@@ -1,18 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dmitrii Chernukho</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="/style.css"/>
 </head>
-<body>
-    <main>
-    <a href="https://github.com/gormonn">Me On GitHub</a>
-    <iframe src="https://suno.com/embed/22a078e1-175b-4631-9eeb-2d5874d9ab5f" width="760" height="240">
-        <a href="https://suno.com/song/22a078e1-175b-4631-9eeb-2d5874d9ab5f">Listen on Suno</a>
-    </iframe>
-    <div id="readme-content" class="loading">
-        Loading
-    </div>
+<body class="bg-[#1a1a1a] text-white min-h-full font-sans antialiased">
+    <main class="max-w-[860px] mx-auto px-6 py-12 sm:py-16">
+
+        <header class="flex items-center justify-between mb-12">
+            <div>
+                <p class="text-xs font-mono text-white/30 uppercase tracking-widest mb-1">gormonn</p>
+                <h1 class="text-xl font-semibold tracking-tight">Dmitrii Chernukho</h1>
+            </div>
+            <a href="https://github.com/gormonn"
+               class="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white border border-white/15 hover:border-white/35 px-4 py-2 rounded-full transition-all duration-200">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.647.35-1.087.636-1.337-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                </svg>
+                GitHub
+            </a>
+        </header>
+
+        <section class="mb-12">
+            <iframe
+                width="100%"
+                height="166"
+                scrolling="no"
+                frameborder="no"
+                allow="autoplay"
+                class="w-full rounded-2xl"
+                src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2297119706&color=%231c3c4c&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true">
+            </iframe>
+            <p class="mt-2 text-xs text-white/30 font-mono truncate">
+                <a href="https://soundcloud.com/gormonn" title="GORMONN" target="_blank" class="hover:text-white/60 transition-colors duration-200">GORMONN</a>
+                <span class="mx-1">·</span>
+                <a href="https://soundcloud.com/gormonn/the-arrangement" title="The Arrangement" target="_blank" class="hover:text-white/60 transition-colors duration-200">The Arrangement</a>
+            </p>
+        </section>
+
+        <div id="readme-content" class="loading
+            prose prose-invert max-w-none
+            prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-white
+            prose-h1:text-3xl prose-h1:mb-4
+            prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:border-b prose-h2:border-white/10 prose-h2:pb-2
+            prose-h3:text-base prose-h3:font-medium
+            prose-p:text-white/70 prose-p:leading-relaxed
+            prose-a:text-white prose-a:underline-offset-4 prose-a:decoration-white/30 hover:prose-a:decoration-white/70
+            prose-strong:text-white prose-strong:font-medium
+            prose-code:font-mono prose-code:text-sm prose-code:text-emerald-300 prose-code:bg-white/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
+            prose-pre:bg-white/5 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-xl
+            prose-img:rounded-xl prose-img:border prose-img:border-white/10
+            prose-hr:border-white/10
+            prose-li:text-white/70
+            prose-blockquote:border-white/20 prose-blockquote:text-white/50">
+            Loading
+        </div>
+
     </main>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
@@ -21,7 +82,7 @@
             .then(text => {
                 const content = document.getElementById('readme-content');
                 content.innerHTML = marked.parse(text);
-                content.className = 'done';
+                content.className = content.className.replace('loading', 'done');
             })
             .catch(error => {
                 console.error('Failed to load README.md:', error);
