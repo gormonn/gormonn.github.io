@@ -7,8 +7,7 @@
  * Click-through URL override via the creative's own script URL:
  * ?clickUrl=<url> (defaults to https://example.com/pizza-promo).
  */
-(function () {
-  'use strict';
+ 
 
   var script = document.currentScript;
   var src = (script && script.src) || '';
@@ -378,7 +377,6 @@
     );
   };
 
-  window.getVPAIDAd = function () {
+  function getVPAIDAd() {
     return new PizzaPollCreative();
-  };
-})();
+  }; 
