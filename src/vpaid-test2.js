@@ -377,6 +377,6 @@
     );
   };
 
-  function getVPAIDAd() {
+window.getVPAIDAd = function() {
     return new PizzaPollCreative();
-  }; 
+};
