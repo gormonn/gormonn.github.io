@@ -152,6 +152,7 @@ h1 {
   border-radius: 1px;
   background: var(--line);
 }
+.days i.buf { background: #3e4b60; }
 .days i.on { background: var(--cardboard); }
 .days i.now { background: var(--paper); }
 .night {
@@ -161,6 +162,7 @@ h1 {
   border: 2px solid var(--line);
   transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
+.night.buf { border-color: #4b5a72; }
 .night.on {
   border-color: var(--screen);
   background: var(--screen);
@@ -243,7 +245,7 @@ html:not(.js) .player { display: none; }
       <p class="artist">gormonn</p>
     </div>
 
-    <audio class="native" id="audio" controls preload="metadata" src="chetyresta-i-odna.mp3"></audio>
+    <audio class="native" id="audio" controls preload="none" src="chetyresta-i-odna.mp3"></audio>
 
     <div class="player">
       <div class="controls">
@@ -262,9 +264,9 @@ html:not(.js) .player { display: none; }
       <p class="status" id="status" role="status"></p>
     </div>
 
-    <a class="download" href="chetyresta-i-odna.mp3" download="gormonn — Четыреста и одна.mp3">
+    <a class="download" id="dl" href="chetyresta-i-odna.mp3" download="gormonn — Четыреста и одна.mp3">
       <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
-      Скачать MP3 <small>5,1&nbsp;МБ</small>
+      <span id="dl-label">Скачать MP3</span> <small id="dl-meta">5,1&nbsp;МБ</small>
     </a>
   </section>
 
@@ -357,10 +359,28 @@ html:not(.js) .player { display: none; }
   var curEl = document.getElementById('cur');
   var durEl = document.getElementById('dur');
   var statusEl = document.getElementById('status');
+  var dl = document.getElementById('dl');
+  var dlLabel = document.getElementById('dl-label');
+  var dlMeta = document.getElementById('dl-meta');
 
   var DAYS = 400;
   var TOTAL = DAYS + 1; // 400 days and one night
   var FALLBACK_DURATION = 222.432;
+  var FILE = 'chetyresta-i-odna.mp3';
+  var FILE_NAME = 'gormonn — Четыреста и одна.mp3';
+  var FILE_SIZE = 5116634;
+  var LOADING = 'Загружаю трек…';
+
+  /* The same file lives on GitHub Pages and on two jsDelivr mirrors.
+     On some networks GitHub Pages is too slow to stream (a few KB/s),
+     so the page probes all three and plays from whichever answers fastest. */
+  var CDN_PATH = 'gh/gormonn/gormonn.github.io@ffbe2e3570862147937df5bbc37c87b152d62793/songs/nataly/' + FILE;
+  var SOURCES = [
+    new URL(FILE, location.href).href,
+    'https://gcore.jsdelivr.net/' + CDN_PATH,
+    'https://cdn.jsdelivr.net/' + CDN_PATH
+  ];
+  var PROBE_BYTES = 65536;
 
   var cells = [];
   var frag = document.createDocumentFragment();
@@ -372,6 +392,57 @@ html:not(.js) .player { display: none; }
   daysEl.appendChild(frag);
   cells.push(night);
 
+  /* ---------- choosing the fastest source ---------- */
+  var chosen = null;
+  var tried = [];
+  var probes = [];
+  var wantPlay = false;
+
+  function choose(src) {
+    if (chosen) return;
+    chosen = src;
+    probes.forEach(function (p) { try { p.ctrl.abort(); } catch (e) {} });
+    useSource(src);
+  }
+  function useSource(src) {
+    tried.push(src);
+    audio.preload = 'auto';
+    audio.src = src;
+  }
+  function leader() {
+    var best = null;
+    probes.forEach(function (p) { if (!p.failed && (!best || p.bytes > best.bytes)) best = p; });
+    return best && best.bytes > 0 ? best.src : SOURCES[0];
+  }
+  function race() {
+    if (!window.fetch || !window.AbortController) { choose(SOURCES[0]); return; }
+    var left = SOURCES.length;
+    SOURCES.forEach(function (src) {
+      var p = { src: src, bytes: 0, failed: false, ctrl: new AbortController() };
+      probes.push(p);
+      fetch(src, { headers: { Range: 'bytes=0-' + (PROBE_BYTES - 1) }, cache: 'no-store', signal: p.ctrl.signal })
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          if (!r.body || !r.body.getReader) return r.arrayBuffer().then(function () { choose(src); });
+          var reader = r.body.getReader();
+          function pump() {
+            return reader.read().then(function (res) {
+              if (chosen) { reader.cancel(); return; }
+              if (res.done) { choose(src); return; }
+              p.bytes += res.value.length;
+              if (p.bytes >= PROBE_BYTES) { reader.cancel(); choose(src); return; }
+              return pump();
+            });
+          }
+          return pump();
+        })
+        .catch(function () { p.failed = true; })
+        .then(function () { if (--left === 0 && !chosen) choose(leader()); });
+    });
+    setTimeout(function () { if (!chosen) choose(leader()); }, 10000);
+  }
+
+  /* ---------- rendering ---------- */
   function duration() {
     return isFinite(audio.duration) && audio.duration > 0 ? audio.duration : FALLBACK_DURATION;
   }
@@ -381,18 +452,30 @@ html:not(.js) .player { display: none; }
     var r = s % 60;
     return m + ':' + (r < 10 ? '0' : '') + r;
   }
+  function bufferedEnd() {
+    var b = audio.buffered, t = audio.currentTime || 0, end = 0;
+    for (var j = 0; j < b.length; j++) {
+      if (b.start(j) <= t + 0.5 && b.end(j) > end) end = b.end(j);
+    }
+    return end;
+  }
+  function paint(from, to, cls, on) {
+    for (var j = from; j < to; j++) cells[j].classList[on ? 'add' : 'remove'](cls);
+  }
 
   var filled = 0;
+  var buffered = 0;
   var nowIdx = -1;
 
   function render() {
     var d = duration();
     var t = audio.currentTime || 0;
+
+    var kb = Math.min(TOTAL, Math.ceil((bufferedEnd() / d) * TOTAL));
+    if (kb !== buffered) { kb > buffered ? paint(buffered, kb, 'buf', true) : paint(kb, buffered, 'buf', false); buffered = kb; }
+
     var k = audio.ended ? TOTAL : Math.min(TOTAL, Math.floor((t / d) * TOTAL));
-    var j;
-    if (k > filled) { for (j = filled; j < k; j++) cells[j].classList.add('on'); }
-    else if (k < filled) { for (j = k; j < filled; j++) cells[j].classList.remove('on'); }
-    filled = k;
+    if (k !== filled) { k > filled ? paint(filled, k, 'on', true) : paint(k, filled, 'on', false); filled = k; }
 
     var n = (t > 0 && k < DAYS) ? k : -1;
     if (n !== nowIdx) {
@@ -419,18 +502,27 @@ html:not(.js) .player { display: none; }
     if ('mediaSession' in navigator) navigator.mediaSession.playbackState = playing ? 'playing' : 'paused';
   }
 
+  /* ---------- controls ---------- */
+  function startPlayback() {
+    var p = audio.play();
+    if (p && p.catch) p.catch(function (e) {
+      if (e && e.name === 'AbortError') return; // source switched mid-start
+      statusEl.textContent = 'Плеер не запустился. Нажми ещё раз или скачай трек кнопкой ниже.';
+    });
+  }
   function toggle() {
+    if (!chosen) choose(leader());
     if (audio.paused || audio.ended) {
-      var p = audio.play();
-      if (p && p.catch) p.catch(function () {
-        statusEl.textContent = 'Плеер не запустился. Нажми ещё раз или скачай трек кнопкой ниже.';
-      });
+      wantPlay = true;
+      if (audio.readyState < 3) statusEl.textContent = LOADING;
+      startPlayback();
     } else {
+      wantPlay = false;
       audio.pause();
     }
   }
-
   function seekTo(seconds) {
+    if (!chosen) choose(leader());
     var d = duration();
     audio.currentTime = Math.max(0, Math.min(d - 0.05, seconds));
     render();
@@ -438,16 +530,28 @@ html:not(.js) .player { display: none; }
 
   playBtn.addEventListener('click', toggle);
 
-  audio.addEventListener('play', function () { statusEl.textContent = ''; setState(); if (!raf) raf = requestAnimationFrame(loop); });
+  audio.addEventListener('play', function () { setState(); if (!raf) raf = requestAnimationFrame(loop); });
+  audio.addEventListener('playing', function () { statusEl.textContent = ''; setState(); });
+  audio.addEventListener('waiting', function () { if (wantPlay) statusEl.textContent = LOADING; });
   audio.addEventListener('pause', function () { setState(); render(); });
-  audio.addEventListener('ended', function () { setState(); render(); });
+  audio.addEventListener('ended', function () { wantPlay = false; setState(); render(); });
   audio.addEventListener('timeupdate', function () { if (!raf) render(); });
+  audio.addEventListener('progress', function () { if (!raf) render(); });
   audio.addEventListener('loadedmetadata', function () {
     durEl.textContent = fmt(duration());
     scrub.setAttribute('aria-valuemax', String(Math.floor(duration())));
     render();
   });
   audio.addEventListener('error', function () {
+    if (!chosen) return;
+    var next = SOURCES.filter(function (s) { return tried.indexOf(s) < 0; })[0];
+    if (next) {
+      var at = audio.currentTime || 0;
+      useSource(next);
+      if (at) audio.currentTime = at;
+      if (wantPlay) startPlayback();
+      return;
+    }
     statusEl.textContent = 'Трек не загрузился. Скачай его кнопкой ниже.';
   });
 
@@ -496,6 +600,59 @@ html:not(.js) .player { display: none; }
     if (e.key === ' ' && e.target === document.body) { e.preventDefault(); toggle(); }
   });
 
+  /* ---------- download from the fastest source, with progress ---------- */
+  var downloading = false;
+  var dlMetaText = dlMeta.textContent;
+  function save(href, isBlob) {
+    var a = document.createElement('a');
+    a.href = href;
+    a.download = FILE_NAME;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    if (isBlob) setTimeout(function () { URL.revokeObjectURL(href); }, 60000);
+  }
+  function resetDownload() {
+    dlLabel.textContent = 'Скачать MP3';
+    dlMeta.textContent = dlMetaText;
+    downloading = false;
+  }
+  dl.addEventListener('click', function (e) {
+    if (!window.fetch || !window.Blob || !window.URL || !URL.createObjectURL) return;
+    e.preventDefault();
+    if (downloading) return;
+    downloading = true;
+    var src = chosen || leader();
+    dlLabel.textContent = 'Скачиваю…';
+    dlMeta.textContent = '0%';
+    fetch(src).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      var total = parseInt(r.headers.get('content-length'), 10) || FILE_SIZE;
+      if (!r.body || !r.body.getReader) return r.blob();
+      var reader = r.body.getReader();
+      var chunks = [];
+      var got = 0;
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return new Blob(chunks, { type: 'audio/mpeg' });
+          chunks.push(res.value);
+          got += res.value.length;
+          dlMeta.textContent = Math.min(99, Math.floor((got / total) * 100)) + '%';
+          return pump();
+        });
+      }
+      return pump();
+    }).then(function (blob) {
+      save(URL.createObjectURL(blob), true);
+      resetDownload();
+    }).catch(function () {
+      resetDownload();
+      save(dl.href, false);
+    });
+  });
+
+  /* ---------- lock screen controls ---------- */
   if ('mediaSession' in navigator && window.MediaMetadata) {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: 'Четыреста и одна',
@@ -504,14 +661,15 @@ html:not(.js) .player { display: none; }
     });
     var ms = navigator.mediaSession;
     try {
-      ms.setActionHandler('play', function () { audio.play(); });
-      ms.setActionHandler('pause', function () { audio.pause(); });
+      ms.setActionHandler('play', function () { wantPlay = true; startPlayback(); });
+      ms.setActionHandler('pause', function () { wantPlay = false; audio.pause(); });
       ms.setActionHandler('seekbackward', function (d) { seekTo(audio.currentTime - ((d && d.seekOffset) || 10)); });
       ms.setActionHandler('seekforward', function (d) { seekTo(audio.currentTime + ((d && d.seekOffset) || 10)); });
       ms.setActionHandler('seekto', function (d) { if (d && typeof d.seekTime === 'number') seekTo(d.seekTime); });
     } catch (err) { /* older browsers lack some actions */ }
   }
 
+  race();
   render();
 })();
 </script>
