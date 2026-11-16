@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Представил — gormonn</title>
+<meta name="description" content="Ещё одна песня про твой топ-1">
+<meta name="theme-color" content="#9daaa9">
+<meta property="og:type" content="music.song">
+<meta property="og:title" content="Представил">
+<meta property="og:description" content="Ещё одна песня про твой топ-1">
+<meta property="og:url" content="https://gormonn.github.io/songs/predstavil/">
+<meta property="og:image" content="https://gormonn.github.io/songs/predstavil/cover.jpg">
+<meta property="og:image:width" content="360">
+<meta property="og:image:height" content="360">
+<meta property="og:audio" content="https://gormonn.github.io/songs/predstavil/predstavil.mp3">
+<meta property="og:audio:type" content="audio/mpeg">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="cover.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+:root {
+  /* palette taken from the cover: film frame, morning screen, desk wood, shadows */
+  --frame: #9daaa9;
+  --screen: #f6f6f5;
+  --ink: #2c2e29;
+  --muted: #62665a;
+  --unsung: #6b716e;
+  --line: #dde1dc;
+  --pencil: #b9c0bb;
+  --wood: #86735c;
+  --wood-text: #77623f;
+  --font-display: "Unbounded", "Arial Black", sans-serif;
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--frame);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- layout: one white "screen" inside the sage film frame ---------- */
+.screen {
+  background: var(--screen);
+  margin: 10px;
+  border-radius: 8px;
+  min-height: calc(100vh - 20px);
+}
+.page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 20px 18px 64px;
+  display: grid;
+  gap: 48px;
+}
+@media (min-width: 860px) {
+  .screen {
+    max-width: 1100px;
+    margin: 28px auto;
+    border-radius: 14px;
+    min-height: 0;
+  }
+  .page {
+    grid-template-columns: minmax(320px, 400px) 1fr;
+    gap: 72px;
+    padding: 44px 32px 88px;
+    align-items: start;
+  }
+  .side { position: sticky; top: 44px; }
+}
+
+/* ---------- side: cover, title, player ---------- */
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.cover {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--line);
+}
+.head { display: flex; flex-direction: column; gap: 6px; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 8.4vw, 2.75rem);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.sub { margin: 4px 0 0; font-size: 1rem; }
+.artist { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+.player { display: flex; flex-direction: column; gap: 10px; }
+.controls { display: flex; align-items: center; gap: 16px; }
+.play {
+  flex: none;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: var(--ink);
+  color: var(--screen);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.play svg { width: 24px; height: 24px; }
+.play .i-pause { display: none; }
+.play[data-state="playing"] .i-play { display: none; }
+.play[data-state="playing"] .i-pause { display: block; }
+.time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0;
+}
+.time .total { color: var(--muted); font-weight: 500; }
+.status { color: var(--wood-text); font-size: 0.9rem; margin: 0; }
+.status:empty { display: none; }
+
+/* the scrubber: a signature stroke ("росчерк") pencilled in, inked as the song plays */
+.scrub {
+  padding: 6px 0;
+  cursor: pointer;
+  touch-action: pan-y;
+  border-radius: 6px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.stroke { display: block; width: 100%; height: auto; overflow: visible; }
+.stroke path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.stroke .guide { stroke: var(--pencil); stroke-width: 1.6; stroke-dasharray: 2 6; }
+.stroke .buffer { stroke: var(--line); stroke-width: 3.4; stroke-dasharray: 1 1; stroke-dashoffset: 1; visibility: hidden; }
+.stroke .ink { stroke: var(--ink); stroke-width: 3.4; stroke-dasharray: 1 1; stroke-dashoffset: 1; visibility: hidden; }
+.stroke .nib { fill: var(--wood); visibility: hidden; }
+
+.download {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 18px 10px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+.download svg { width: 20px; height: 20px; color: var(--wood); }
+.download small { color: var(--muted); font-weight: 500; font-size: 0.85rem; }
+@media (hover: hover) {
+  .download:hover { border-color: var(--wood); }
+  .play:hover { background: #454840; }
+}
+.play:focus-visible, .scrub:focus-visible, .download:focus-visible, audio:focus-visible {
+  outline: 3px solid var(--wood);
+  outline-offset: 3px;
+}
+
+/* without JS the native player is shown instead */
+.native { width: 100%; }
+.js .native { display: none; }
+html:not(.js) .player { display: none; }
+
+/* ---------- lyrics ---------- */
+.lyrics { max-width: 34em; }
+.lyrics h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--muted);
+  margin: 0 0 28px;
+}
+.lyrics .hint { color: var(--muted); font-size: 0.85rem; margin: -18px 0 28px; }
+html:not(.js) .lyrics .hint { display: none; }
+@media (max-width: 420px) {
+  .lyrics { font-size: 16px; }
+  .chorus { padding-left: 13px; }
+}
+.stanza { margin: 0 0 1.9em; }
+.stanza p { margin: 0; }
+.chorus {
+  border-left: 3px solid var(--wood);
+  padding-left: 16px;
+  font-weight: 600;
+}
+.adlib { color: var(--wood-text); font-weight: 700; }
+.soft, .quiet { color: var(--muted); }
+.chorus .quiet { font-weight: 500; }
+
+/* timed lyrics: grey until sung, the current word underlined like a pen stroke */
+.js .lyrics p[data-s] { cursor: pointer; }
+.lyrics .w { transition: color 0.2s ease; }
+.lyrics.karaoke p,
+.lyrics.karaoke .w { color: var(--unsung); }
+.lyrics.karaoke .w.sung { color: var(--ink); }
+.lyrics.karaoke .adlib .w.sung { color: var(--wood-text); }
+.lyrics.karaoke .w.cur {
+  text-decoration: underline;
+  text-decoration-color: var(--wood);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lyrics .w { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="screen">
+<main class="page">
+  <section class="side" aria-label="Трек">
+    <img class="cover" src="cover.jpg" width="360" height="360" alt="Монитор с пустым белым экраном и курсором на деревянном столе, рядом кружка и обрывки бумаги, утренний свет из окна">
+    <div class="head">
+      <h1>Представил</h1>
+      <p class="sub">Ещё одна песня про твой топ-1</p>
+      <p class="artist">gormonn</p>
+    </div>
+
+    <audio class="native" id="audio" controls preload="none" src="predstavil.mp3"></audio>
+
+    <div class="player">
+      <div class="controls">
+        <button class="play" id="play" type="button" aria-label="Слушать" data-state="paused">
+          <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>
+          <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="4" width="4.5" height="16" rx="1.2" fill="currentColor"/><rect x="14" y="4" width="4.5" height="16" rx="1.2" fill="currentColor"/></svg>
+        </button>
+        <p class="time" aria-hidden="true"><span id="cur">0:00</span> <span class="total">/ <span id="dur">2:53</span></span></p>
+      </div>
+      <div class="scrub" id="scrub" role="slider" tabindex="0"
+           aria-label="Перемотка" aria-valuemin="0" aria-valuemax="173" aria-valuenow="0" aria-valuetext="0:00 из 2:53">
+        <svg class="stroke" id="stroke" viewBox="0 0 400 64" aria-hidden="true" focusable="false">
+          <path class="buffer" id="buffer" pathLength="1" d="M6 40 C30 40 44 22 70 22 C100 22 140 50 200 50 C260 50 290 26 320 26 C338 26 346 36 360 36 C374 36 384 22 396 10"/>
+          <path class="guide" id="guide" d="M6 40 C30 40 44 22 70 22 C100 22 140 50 200 50 C260 50 290 26 320 26 C338 26 346 36 360 36 C374 36 384 22 396 10"/>
+          <path class="ink" id="ink" pathLength="1" d="M6 40 C30 40 44 22 70 22 C100 22 140 50 200 50 C260 50 290 26 320 26 C338 26 346 36 360 36 C374 36 384 22 396 10"/>
+          <circle class="nib" id="nib" r="4.5" cx="6" cy="40"/>
+        </svg>
+      </div>
+      <p class="status" id="status" role="status"></p>
+    </div>
+
+    <a class="download" id="dl" href="predstavil.mp3" download="gormonn — Представил.mp3">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
+      <span id="dl-label">Скачать MP3</span> <small id="dl-meta">3,9&nbsp;МБ</small>
+    </a>
+  </section>
+
+<article class="lyrics" id="lyrics">
+    <h2>Текст</h2>
+    <p class="hint">Нажми на строку, чтобы послушать с неё.</p>
+
+    <div class="stanza">
+      <span class="sr-only">Куплет 1.</span>
+      <p data-s="16.11" data-e="19.13"><span class="w" data-t="16.11">Всё</span> <span class="w" data-t="16.39">вложила&nbsp;—</span> <span class="w" data-t="17.45">и</span> <span class="w" data-t="17.60">спать,</span> <span class="w" data-t="18.31">до</span> <span class="w" data-t="18.44">награды,</span></p>
+      <p data-s="20.08" data-e="22.54"><span class="w" data-t="20.08">а</span> <span class="w" data-t="20.23">проснулась&nbsp;—</span> <span class="w" data-t="21.50">уже</span> <span class="w" data-t="21.83">на</span> <span class="w" data-t="22.02">коне.</span></p>
+      <p data-s="24.06" data-e="26.87"><span class="w" data-t="24.06">Не</span> <span class="w" data-t="24.18">спеша,</span> <span class="w" data-t="25.06">без</span> <span class="w" data-t="25.21">речей,</span> <span class="w" data-t="25.92">без</span> <span class="w" data-t="26.22">парада&nbsp;—</span></p>
+      <p data-s="28.09" data-e="30.58"><span class="w" data-t="28.09">ты</span> <span class="w" data-t="28.23">умеешь</span> <span class="w" data-t="28.76">вот</span> <span class="w" data-t="28.99">так&nbsp;—</span> <span class="w" data-t="29.81">в</span> <span class="w" data-t="30.08">тишине.</span></p>
+    </div>
+
+    <div class="stanza chorus">
+      <span class="sr-only">Припев.</span>
+      <p data-s="34.26" data-e="37.40"><span class="w" data-t="34.26">Я</span> <span class="w" data-t="34.54">не</span> <span class="w" data-t="34.75">видел&nbsp;—</span> <span class="w" data-t="36.41">представил,</span></p>
+      <p data-s="38.41" data-e="40.79"><span class="w" data-t="38.41">как</span> <span class="w" data-t="38.78">ты</span> <span class="w" data-t="39.31">улыбнулась&nbsp;—</span> <span class="w" data-t="40.47">себе.</span></p>
+      <p data-s="42.01" data-e="45.04"><span class="w" data-t="42.01">Ни</span> <span class="w" data-t="42.10">штриха</span> <span class="w" data-t="44.06">не</span> <span class="w" data-t="44.30">добавил.</span></p>
+      <p data-s="46.22" data-e="48.64"><span class="w" data-t="46.22">Красиво.</span> <span class="w" data-t="47.29">И</span> <span class="w" data-t="47.60">это&nbsp;—</span> <span class="w" data-t="48.32">тебе.</span></p>
+    </div>
+
+    <div class="stanza">
+      <span class="sr-only">Куплет 2.</span>
+      <p data-s="51.98" data-e="54.84"><span class="w" data-t="51.98">Я</span> <span class="w" data-t="52.16">на</span> <span class="w" data-t="52.40">тёплое</span> <span class="w" data-t="53.03">скуп</span> <span class="w" data-t="53.76">неприлично&nbsp;—</span></p>
+      <p data-s="55.54" data-e="58.51"><span class="w" data-t="55.54">мне</span> <span class="w" data-t="55.93">привычнее</span> <span class="w" data-t="56.84">шуткой</span> <span class="w" data-t="57.67">и</span> <span class="w" data-t="57.77">вскользь.</span></p>
+      <p data-s="59.69" data-e="62.47"><span class="w" data-t="59.69">А</span> <span class="w" data-t="59.99">сегодня</span> <span class="w" data-t="60.49">скажу&nbsp;—</span> <span class="w" data-t="61.54">без</span> <span class="w" data-t="61.73">кавычек:</span></p>
+      <p data-s="63.54" data-e="65.83"><span class="w" data-t="63.54">ты</span> <span class="w" data-t="63.65">считала&nbsp;—</span> <span class="w" data-t="64.73">и</span> <span class="w" data-t="64.82">ровно</span> <span class="w" data-t="65.24">сошлось.</span></p>
+    </div>
+
+    <div class="stanza chorus">
+      <span class="sr-only">Припев.</span>
+      <p data-s="69.32" data-e="72.51"><span class="w" data-t="69.32">Я</span> <span class="w" data-t="69.67">не</span> <span class="w" data-t="69.93">видел&nbsp;—</span> <span class="w" data-t="71.38">представил,</span></p>
+      <p data-s="73.61" data-e="75.99"><span class="w" data-t="73.61">как</span> <span class="w" data-t="73.92">ты</span> <span class="w" data-t="74.46">улыбнулась&nbsp;—</span> <span class="w" data-t="75.67">себе.</span></p>
+      <p data-s="77.20" data-e="80.24"><span class="w" data-t="77.20">Ни</span> <span class="w" data-t="77.30">штриха</span> <span class="w" data-t="79.16">не</span> <span class="w" data-t="79.43">добавил.</span></p>
+      <p data-s="81.41" data-e="83.92"><span class="w" data-t="81.41">Красиво.</span> <span class="w" data-t="82.56">И</span> <span class="w" data-t="82.88">это&nbsp;—</span> <span class="w" data-t="83.60">тебе.</span></p>
+    </div>
+
+    <div class="stanza soft">
+      <span class="sr-only">Бридж, тихо.</span>
+      <p data-s="87.65" data-e="90.20"><span class="w" data-t="87.65">Утро.</span> <span class="w" data-t="88.41">Экран.</span> <span class="w" data-t="88.94">Твоё</span> <span class="w" data-t="89.48">имя&nbsp;—</span></p>
+      <p data-s="91.59" data-e="93.62"><span class="w" data-t="91.59">первой</span> <span class="w" data-t="92.76">строкой.</span></p>
+      <p data-s="95.50" data-e="97.94"><span class="w" data-t="95.50">Просто</span> <span class="w" data-t="96.05">улыбка&nbsp;—</span> <span class="w" data-t="96.97">как</span> <span class="w" data-t="97.24">росчерк</span></p>
+      <p data-s="99.31" data-e="101.75"><span class="w" data-t="99.31">твёрдой</span> <span class="w" data-t="100.98">рукой.</span></p>
+    </div>
+
+    <div class="stanza chorus">
+      <span class="sr-only">Финальный припев, последняя строка шёпотом.</span>
+      <p data-s="135.23" data-e="138.21"><span class="w" data-t="135.23">Я</span> <span class="w" data-t="135.48">не</span> <span class="w" data-t="135.70">видел&nbsp;—</span> <span class="w" data-t="137.45">представил,</span></p>
+      <p data-s="139.52" data-e="141.68"><span class="w" data-t="139.52">как</span> <span class="w" data-t="139.81">ты</span> <span class="w" data-t="140.52">улыбнулась&nbsp;—</span> <span class="w" data-t="141.35">себе.</span></p>
+      <p data-s="143.34" data-e="146.33"><span class="w" data-t="143.34">Ни</span> <span class="w" data-t="143.41">штриха</span> <span class="w" data-t="145.55">не</span> <span class="w" data-t="145.73">добавил.</span></p>
+      <p class="quiet" data-s="147.82" data-e="156.08"><span class="w" data-t="147.82">Красиво.</span> <span class="w" data-t="149.05">И</span> <span class="w" data-t="149.35">это&nbsp;—</span> <span class="w" data-t="151.06">тебе.</span></p>
+    </div>
+
+    <div class="stanza">
+      <span class="sr-only">Аутро.</span>
+      <p class="quiet" data-s="155.13" data-e="156.08"><span class="adlib"><span class="w" data-t="155.13">(Красиво.)</span></span></p>
+    </div>
+  </article>
+</main>
+</div>
+
+<script>
+(function () {
+  var audio = document.getElementById('audio');
+  var playBtn = document.getElementById('play');
+  var scrub = document.getElementById('scrub');
+  var svg = document.getElementById('stroke');
+  var guide = document.getElementById('guide');
+  var inkPath = document.getElementById('ink');
+  var bufPath = document.getElementById('buffer');
+  var nib = document.getElementById('nib');
+  var curEl = document.getElementById('cur');
+  var durEl = document.getElementById('dur');
+  var statusEl = document.getElementById('status');
+  var dl = document.getElementById('dl');
+  var dlLabel = document.getElementById('dl-label');
+  var dlMeta = document.getElementById('dl-meta');
+
+  var FALLBACK_DURATION = 173.16;
+  var FILE = 'predstavil.mp3';
+  var FILE_NAME = 'gormonn — Представил.mp3';
+  var FILE_SIZE = 3931244;
+  var LOADING = 'Загружаю трек…';
+
+  /* The same file lives on GitHub Pages and on two jsDelivr mirrors.
+     On some networks GitHub Pages is too slow to stream (a few KB/s),
+     so the page probes all three and plays from whichever answers fastest. */
+  var CDN_PATH = 'gh/gormonn/gormonn.github.io@a0fb78c69bcb048ff7cb78320280892e191898a0/songs/predstavil/' + FILE;
+  var SOURCES = [
+    new URL(FILE, location.href).href,
+    'https://gcore.jsdelivr.net/' + CDN_PATH,
+    'https://cdn.jsdelivr.net/' + CDN_PATH
+  ];
+  var PROBE_BYTES = 65536;
+
+  /* the stroke: ink length follows playback; x along the stroke maps back to time */
+  var STROKE_W = 400; // viewBox width
+  var GL = guide.getTotalLength();
+  var LUT_N = 240;
+  var lutX = [];
+  for (var i = 0; i <= LUT_N; i++) lutX.push(guide.getPointAtLength((GL * i) / LUT_N).x);
+  function fracFromX(vx) {
+    if (vx <= lutX[0]) return 0;
+    if (vx >= lutX[LUT_N]) return 1;
+    var lo = 0, hi = LUT_N;
+    while (hi - lo > 1) {
+      var mid = (lo + hi) >> 1;
+      if (lutX[mid] <= vx) lo = mid; else hi = mid;
+    }
+    var f = (vx - lutX[lo]) / ((lutX[hi] - lutX[lo]) || 1);
+    return (lo + f) / LUT_N;
+  }
+  function paintStroke(p, pb) {
+    inkPath.style.strokeDashoffset = String(1 - p);
+    inkPath.style.visibility = p > 0 ? 'visible' : 'hidden';
+    bufPath.style.strokeDashoffset = String(1 - pb);
+    bufPath.style.visibility = pb > 0 ? 'visible' : 'hidden';
+    if (p > 0 && p < 1) {
+      var pt = guide.getPointAtLength(GL * p);
+      nib.setAttribute('cx', pt.x.toFixed(2));
+      nib.setAttribute('cy', pt.y.toFixed(2));
+      nib.style.visibility = 'visible';
+    } else {
+      nib.style.visibility = 'hidden';
+    }
+  }
+
+  /* ---------- timed lyrics (word timings from Suno's alignment) ---------- */
+  var lyricsEl = document.getElementById('lyrics');
+  var words = [].map.call(lyricsEl.querySelectorAll('.w'), function (el) {
+    return { el: el, t: parseFloat(el.getAttribute('data-t')) };
+  });
+  var lines = [].map.call(lyricsEl.querySelectorAll('p[data-s]'), function (el) {
+    return { el: el, t: parseFloat(el.getAttribute('data-s')), e: parseFloat(el.getAttribute('data-e')) };
+  });
+  var LEAD = 0.06; // light a word a hair early so it never feels late
+  var HOLD = 1.2;  // a line stays current this long after its last word
+  var sung = 0, curWord = -1, curLine = -1, lastLine = -1, karaoke = false;
+  var lastUserScroll = 0;
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function countUpTo(arr, t) { // how many items start at or before t
+    var lo = 0, hi = arr.length;
+    while (lo < hi) {
+      var mid = (lo + hi) >> 1;
+      if (arr[mid].t <= t) lo = mid + 1; else hi = mid;
+    }
+    return lo;
+  }
+  function isVisible(el) {
+    var r = el.getBoundingClientRect();
+    return r.bottom > 0 && r.top < window.innerHeight;
+  }
+  function follow(li) {
+    // scroll along only while the reader is looking at the lyrics and not scrolling by hand
+    if (lastLine < 0 || Date.now() - lastUserScroll < 4000) return;
+    if (!isVisible(lines[lastLine].el)) return;
+    var r = lines[li].el.getBoundingClientRect();
+    var vh = window.innerHeight;
+    if (r.top < vh * 0.2 || r.bottom > vh * 0.65) {
+      lines[li].el.scrollIntoView({ block: 'center', behavior: reducedMotion ? 'auto' : 'smooth' });
+    }
+  }
+  function renderLyrics(t) {
+    if (!karaoke) {
+      if (t <= 0 && audio.paused) return;
+      karaoke = true;
+      lyricsEl.classList.add('karaoke');
+    }
+    var tt = t + LEAD;
+    var j;
+    var k = countUpTo(words, tt);
+    if (k > sung) { for (j = sung; j < k; j++) words[j].el.classList.add('sung'); }
+    else if (k < sung) { for (j = k; j < sung; j++) words[j].el.classList.remove('sung'); }
+    sung = k;
+
+    var li = countUpTo(lines, tt) - 1;
+    if (li >= 0) {
+      var next = lines[li + 1];
+      if (tt >= Math.min(lines[li].e + HOLD, next ? next.t : Infinity)) li = -1;
+    }
+    if (li !== curLine) {
+      if (curLine >= 0) lines[curLine].el.classList.remove('cur');
+      if (li >= 0) {
+        lines[li].el.classList.add('cur');
+        follow(li);
+        lastLine = li;
+      }
+      curLine = li;
+    }
+    var cw = li >= 0 ? k - 1 : -1;
+    if (cw !== curWord) {
+      if (curWord >= 0) words[curWord].el.classList.remove('cur');
+      if (cw >= 0) words[cw].el.classList.add('cur');
+      curWord = cw;
+    }
+  }
+  ['wheel', 'touchmove', 'keydown'].forEach(function (ev) {
+    window.addEventListener(ev, function () { lastUserScroll = Date.now(); }, { passive: true });
+  });
+
+  /* ---------- choosing the fastest source ---------- */
+  var chosen = null;
+  var tried = [];
+  var probes = [];
+  var wantPlay = false;
+
+  function choose(src) {
+    if (chosen) return;
+    chosen = src;
+    probes.forEach(function (p) { try { p.ctrl.abort(); } catch (e) {} });
+    useSource(src);
+  }
+  function useSource(src) {
+    tried.push(src);
+    audio.preload = 'auto';
+    audio.src = src;
+  }
+  function leader() {
+    var best = null;
+    probes.forEach(function (p) { if (!p.failed && (!best || p.bytes > best.bytes)) best = p; });
+    return best && best.bytes > 0 ? best.src : SOURCES[0];
+  }
+  function race() {
+    if (!window.fetch || !window.AbortController) { choose(SOURCES[0]); return; }
+    var left = SOURCES.length;
+    SOURCES.forEach(function (src) {
+      var p = { src: src, bytes: 0, failed: false, ctrl: new AbortController() };
+      probes.push(p);
+      fetch(src, { headers: { Range: 'bytes=0-' + (PROBE_BYTES - 1) }, cache: 'no-store', signal: p.ctrl.signal })
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          if (!r.body || !r.body.getReader) return r.arrayBuffer().then(function () { choose(src); });
+          var reader = r.body.getReader();
+          function pump() {
+            return reader.read().then(function (res) {
+              if (chosen) { reader.cancel(); return; }
+              if (res.done) { choose(src); return; }
+              p.bytes += res.value.length;
+              if (p.bytes >= PROBE_BYTES) { reader.cancel(); choose(src); return; }
+              return pump();
+            });
+          }
+          return pump();
+        })
+        .catch(function () { p.failed = true; })
+        .then(function () { if (--left === 0 && !chosen) choose(leader()); });
+    });
+    setTimeout(function () { if (!chosen) choose(leader()); }, 10000);
+  }
+
+  /* ---------- rendering ---------- */
+  function duration() {
+    return isFinite(audio.duration) && audio.duration > 0 ? audio.duration : FALLBACK_DURATION;
+  }
+  function fmt(s) {
+    s = Math.max(0, Math.floor(s));
+    var m = Math.floor(s / 60);
+    var r = s % 60;
+    return m + ':' + (r < 10 ? '0' : '') + r;
+  }
+  function bufferedEnd() {
+    var b = audio.buffered, t = audio.currentTime || 0, end = 0;
+    for (var j = 0; j < b.length; j++) {
+      if (b.start(j) <= t + 0.5 && b.end(j) > end) end = b.end(j);
+    }
+    return end;
+  }
+  function render() {
+    var d = duration();
+    var t = audio.currentTime || 0;
+
+    var p = audio.ended ? 1 : Math.min(1, t / d);
+    paintStroke(p, Math.min(1, bufferedEnd() / d));
+
+    curEl.textContent = fmt(t);
+    scrub.setAttribute('aria-valuenow', String(Math.floor(t)));
+    scrub.setAttribute('aria-valuetext', fmt(t) + ' из ' + fmt(d));
+    renderLyrics(t);
+  }
+
+  var raf = 0;
+  function loop() {
+    render();
+    raf = audio.paused ? 0 : requestAnimationFrame(loop);
+  }
+
+  function setState() {
+    var playing = !audio.paused && !audio.ended;
+    playBtn.dataset.state = playing ? 'playing' : 'paused';
+    playBtn.setAttribute('aria-label', playing ? 'Пауза' : 'Слушать');
+    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = playing ? 'playing' : 'paused';
+  }
+
+  /* ---------- controls ---------- */
+  function startPlayback() {
+    var p = audio.play();
+    if (p && p.catch) p.catch(function (e) {
+      if (e && e.name === 'AbortError') return; // source switched mid-start
+      statusEl.textContent = 'Плеер не запустился. Нажми ещё раз или скачай трек кнопкой ниже.';
+    });
+  }
+  function toggle() {
+    if (!chosen) choose(leader());
+    if (audio.paused || audio.ended) {
+      wantPlay = true;
+      if (audio.readyState < 3) statusEl.textContent = LOADING;
+      startPlayback();
+    } else {
+      wantPlay = false;
+      audio.pause();
+    }
+  }
+  function seekTo(seconds) {
+    if (!chosen) choose(leader());
+    var d = duration();
+    audio.currentTime = Math.max(0, Math.min(d - 0.05, seconds));
+    render();
+  }
+
+  playBtn.addEventListener('click', toggle);
+
+  audio.addEventListener('play', function () { setState(); if (!raf) raf = requestAnimationFrame(loop); });
+  audio.addEventListener('playing', function () { statusEl.textContent = ''; setState(); });
+  audio.addEventListener('waiting', function () { if (wantPlay) statusEl.textContent = LOADING; });
+  audio.addEventListener('pause', function () { setState(); render(); });
+  audio.addEventListener('ended', function () { wantPlay = false; setState(); render(); });
+  audio.addEventListener('timeupdate', function () { if (!raf) render(); });
+  audio.addEventListener('progress', function () { if (!raf) render(); });
+  audio.addEventListener('loadedmetadata', function () {
+    durEl.textContent = fmt(duration());
+    scrub.setAttribute('aria-valuemax', String(Math.floor(duration())));
+    render();
+  });
+  audio.addEventListener('error', function () {
+    if (!chosen) return;
+    var next = SOURCES.filter(function (s) { return tried.indexOf(s) < 0; })[0];
+    if (next) {
+      var at = audio.currentTime || 0;
+      useSource(next);
+      if (at) audio.currentTime = at;
+      if (wantPlay) startPlayback();
+      return;
+    }
+    statusEl.textContent = 'Трек не загрузился. Скачай его кнопкой ниже.';
+  });
+
+  /* scrubbing along the stroke */
+  function seekFromPointer(e) {
+    var r = svg.getBoundingClientRect();
+    var vx = ((e.clientX - r.left) / r.width) * STROKE_W;
+    seekTo(fracFromX(vx) * duration());
+  }
+  var dragging = false;
+  scrub.addEventListener('pointerdown', function (e) {
+    if (e.button !== undefined && e.button !== 0) return;
+    dragging = true;
+    if (scrub.setPointerCapture) scrub.setPointerCapture(e.pointerId);
+    seekFromPointer(e);
+  });
+  scrub.addEventListener('pointermove', function (e) { if (dragging) seekFromPointer(e); });
+  function stopDrag() { dragging = false; }
+  scrub.addEventListener('pointerup', stopDrag);
+  scrub.addEventListener('pointercancel', stopDrag);
+
+  scrub.addEventListener('keydown', function (e) {
+    var t = audio.currentTime || 0;
+    var handled = true;
+    switch (e.key) {
+      case 'ArrowRight': case 'ArrowUp': seekTo(t + 5); break;
+      case 'ArrowLeft': case 'ArrowDown': seekTo(t - 5); break;
+      case 'PageUp': seekTo(t + 30); break;
+      case 'PageDown': seekTo(t - 30); break;
+      case 'Home': seekTo(0); break;
+      case 'End': seekTo(duration()); break;
+      case ' ': case 'Enter': toggle(); break;
+      default: handled = false;
+    }
+    if (handled) e.preventDefault();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === ' ' && e.target === document.body) { e.preventDefault(); toggle(); }
+  });
+
+  /* tap a lyric line to play from it */
+  lyricsEl.addEventListener('click', function (e) {
+    var p = e.target.closest ? e.target.closest('p[data-s]') : null;
+    if (!p) return;
+    if (window.getSelection && String(window.getSelection())) return; // selecting text, not seeking
+    seekTo(Math.max(0, parseFloat(p.getAttribute('data-s')) - 0.4));
+    if (audio.paused || audio.ended) toggle();
+  });
+
+  /* ---------- download from the fastest source, with progress ---------- */
+  var downloading = false;
+  var dlMetaText = dlMeta.textContent;
+  function save(href, isBlob) {
+    var a = document.createElement('a');
+    a.href = href;
+    a.download = FILE_NAME;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    if (isBlob) setTimeout(function () { URL.revokeObjectURL(href); }, 60000);
+  }
+  function resetDownload() {
+    dlLabel.textContent = 'Скачать MP3';
+    dlMeta.textContent = dlMetaText;
+    downloading = false;
+  }
+  dl.addEventListener('click', function (e) {
+    if (!window.fetch || !window.Blob || !window.URL || !URL.createObjectURL) return;
+    e.preventDefault();
+    if (downloading) return;
+    downloading = true;
+    var src = chosen || leader();
+    dlLabel.textContent = 'Скачиваю…';
+    dlMeta.textContent = '0%';
+    fetch(src).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      var total = parseInt(r.headers.get('content-length'), 10) || FILE_SIZE;
+      if (!r.body || !r.body.getReader) return r.blob();
+      var reader = r.body.getReader();
+      var chunks = [];
+      var got = 0;
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) return new Blob(chunks, { type: 'audio/mpeg' });
+          chunks.push(res.value);
+          got += res.value.length;
+          dlMeta.textContent = Math.min(99, Math.floor((got / total) * 100)) + '%';
+          return pump();
+        });
+      }
+      return pump();
+    }).then(function (blob) {
+      save(URL.createObjectURL(blob), true);
+      resetDownload();
+    }).catch(function () {
+      resetDownload();
+      save(dl.href, false);
+    });
+  });
+
+  /* ---------- lock screen controls ---------- */
+  if ('mediaSession' in navigator && window.MediaMetadata) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: 'Представил',
+      artist: 'gormonn',
+      artwork: [{ src: new URL('cover.jpg', location.href).href, sizes: '360x360', type: 'image/jpeg' }]
+    });
+    var ms = navigator.mediaSession;
+    try {
+      ms.setActionHandler('play', function () { wantPlay = true; startPlayback(); });
+      ms.setActionHandler('pause', function () { wantPlay = false; audio.pause(); });
+      ms.setActionHandler('seekbackward', function (d) { seekTo(audio.currentTime - ((d && d.seekOffset) || 10)); });
+      ms.setActionHandler('seekforward', function (d) { seekTo(audio.currentTime + ((d && d.seekOffset) || 10)); });
+      ms.setActionHandler('seekto', function (d) { if (d && typeof d.seekTime === 'number') seekTo(d.seekTime); });
+    } catch (err) { /* older browsers lack some actions */ }
+  }
+
+  race();
+  render();
+})();
+</script>
+</body>
+</html>
