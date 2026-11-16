@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>关于你学中文的歌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&text=%E4%B8%80%E4%BA%8C%E4%B8%89%E5%9B%9B%E4%BA%94%E5%85%AD%E4%B8%83%E5%85%AB%E4%B9%9D%E5%8D%81%E8%B0%A2&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* layout: one question per screen; Chinese first, pinyin and Russian appear via the two toggles */
+  --bg: #f6f1ea;
+  --surface: #fffdf9;
+  --ink: #1f1a16;
+  --muted: #6b6159;
+  --line: #e2d8cc;
+  --accent: #b23a2c;
+  --accent-soft: #f6e1dc;
+  --on-accent: #ffffff;
+  --gold: #9a6b12;
+  --gold-soft: #f8edd3;
+  --font-zh: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-ru: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-han: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17120f;
+    --surface: #211a16;
+    --ink: #f1e9e1;
+    --muted: #b3a69a;
+    --line: #3a2f28;
+    --accent: #ef7a66;
+    --accent-soft: #3d221c;
+    --on-accent: #1a0f0c;
+    --gold: #f0bd4f;
+    --gold-soft: #3a2f14;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17120f;
+  --surface: #211a16;
+  --ink: #f1e9e1;
+  --muted: #b3a69a;
+  --line: #3a2f28;
+  --accent: #ef7a66;
+  --accent-soft: #3d221c;
+  --on-accent: #1a0f0c;
+  --gold: #f0bd4f;
+  --gold-soft: #3a2f14;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-zh);
+  font-size: 16px;
+  line-height: 1.55;
+}
+.wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 16px 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* bilingual text: zh always, py and ru only when toggled on */
+.zh, .py, .ru { display: block; }
+.py, .ru { display: none; }
+.show-py .py { display: block; }
+.show-ru .ru { display: block; }
+.py {
+  font-family: var(--font-zh);
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.86em;
+  line-height: 1.4;
+}
+.ru {
+  font-family: var(--font-ru);
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 0.86em;
+  line-height: 1.4;
+}
+.tri { display: flex; flex-direction: column; gap: 3px; }
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.toggle {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  min-height: 40px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.toggle[data-lang="ru"] { font-family: var(--font-ru); }
+.toggle[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.seal {
+  flex: none;
+  min-width: 48px;
+  height: 48px;
+  padding: 0 8px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  white-space: nowrap;
+  font-family: var(--font-han);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--on-accent);
+  background: var(--accent);
+}
+.progress {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.progress-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+.fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+h1, h2 {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.4;
+}
+h1 { font-size: 1.4rem; }
+h2 { font-size: 1.2rem; }
+h1 .zh, h2 .zh { text-wrap: balance; }
+h1 .py, h2 .py, h1 .ru, h2 .ru { font-size: 0.72em; margin-top: 2px; }
+p { margin: 0; }
+.muted { color: var(--muted); font-size: 0.92rem; }
+.hint { color: var(--muted); font-size: 0.82rem; }
+.warn {
+  background: var(--gold-soft);
+  border: 1.5px solid var(--gold);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.92rem;
+}
+.options {
+  display: grid;
+  gap: 10px;
+}
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 54px;
+  padding: 12px 14px;
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.opt .zh { font-size: 1.05rem; font-weight: 500; }
+@media (hover: hover) { .opt:hover { border-color: var(--accent); } }
+.opt[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.letter {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-ru);
+  font-weight: 700;
+  font-size: 0.82rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.opt[aria-pressed="true"] .letter {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.opt-re { border-style: dashed; }
+.opt-re .letter { background: var(--gold-soft); color: var(--gold); }
+@media (hover: hover) { .opt-re:hover { border-color: var(--gold); } }
+.opt-re[aria-pressed="true"] { border-color: var(--gold); border-style: solid; background: var(--gold-soft); }
+.opt-re[aria-pressed="true"] .letter { background: var(--gold); color: var(--on-accent); }
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field label {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+input[type="text"], textarea {
+  width: 100%;
+  font: inherit;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+}
+textarea { resize: vertical; min-height: 96px; }
+input[type="text"]:focus, textarea:focus { border-color: var(--accent); outline: none; }
+.nav {
+  display: flex;
+  gap: 12px;
+}
+.btn {
+  font: inherit;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 12px 18px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  min-height: 52px;
+}
+.btn .ru { font-weight: 500; color: inherit; opacity: 0.85; }
+.btn-primary {
+  flex: 1;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.btn:focus-visible, .opt:focus-visible, .toggle:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+.summary {
+  min-height: 260px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+.status {
+  font-size: 0.9rem;
+  color: var(--accent);
+  min-height: 1.4em;
+}
+.status .ru { color: var(--accent); }
+.seal-big {
+  align-self: flex-start;
+  height: auto;
+  padding: 10px 16px;
+  font-size: 1.9rem;
+  letter-spacing: 0.08em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fill, .opt { transition: none; }
+}
+</style>
+</head>
+<body>
+<main class="wrap" id="app">
+  <section class="card">
+    <h1>关于你学中文的歌</h1>
+    <p>你好！我想写一首关于你学中文的歌。</p>
+  </section>
+</main>
+
+<script>
+(function () {
+  var LETTERS = ["A", "B", "C", "D", "E"];
+  var HAN = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"];
+  var KEY = "kitayskiy-anketa-zh-v1";
+  var VIEW_KEY = "kitayskiy-anketa-zh-view";
+
+  function T(zh, py, ru) { return { zh: zh, py: py, ru: ru }; }
+
+  var LIKE = [
+    T("汉字", "Hànzì", "Иероглифы"),
+    T("声调", "Shēngdiào", "Тоны"),
+    T("发音", "Fāyīn", "Произношение"),
+    T("语法", "Yǔfǎ", "Грамматика"),
+    T("没有", "Méiyǒu", "Нет такого")
+  ];
+
+  var Q = [
+    { t: T("你是怎么决定学中文的？", "Nǐ shì zěnme juédìng xué Zhōngwén de?", "Как пришло решение учить китайский?"),
+      o: [
+        T("很早就想学", "Hěn zǎo jiù xiǎng xué", "Давно хотела"),
+        T("突然决定的", "Tūrán juédìng de", "Решила спонтанно"),
+        T("因为情况需要", "Yīnwèi qíngkuàng xūyào", "Так сложились обстоятельства"),
+        T("别人建议的", "Biérén jiànyì de", "Кто-то предложил"),
+        T("不记得了", "Bú jìde le", "Не помню")
+      ] },
+    { t: T("什么让你继续学下去？", "Shénme ràng nǐ jìxù xué xiàqu?", "Что побуждает тебя учиться дальше?"),
+      o: [
+        T("对中文的兴趣", "Duì Zhōngwén de xìngqù", "Интерес к китайскому"),
+        T("看到进步", "Kàndào jìnbù", "Видимый прогресс"),
+        T("有具体的目标", "Yǒu jùtǐ de mùbiāo", "Конкретная цель"),
+        T("家人的支持", "Jiārén de zhīchí", "Поддержка близких"),
+        T("没想过", "Méi xiǎng guo", "Не задумывалась")
+      ] },
+    { t: T("中文有没有你喜欢的地方？", "Zhōngwén yǒu méiyǒu nǐ xǐhuan de dìfang?", "Есть ли в китайском что-то, что тебе нравится?"),
+      o: LIKE },
+    { t: T("中文有没有你不喜欢的地方？", "Zhōngwén yǒu méiyǒu nǐ bù xǐhuan de dìfang?", "Есть ли в китайском что-то, что тебе не нравится?"),
+      o: LIKE },
+    { t: T("中文会让你觉得烦吗？", "Zhōngwén huì ràng nǐ juéde fán ma?", "Бывает ли, что китайский тебя раздражает?"),
+      o: [
+        T("经常", "Jīngcháng", "Часто"),
+        T("有时候", "Yǒu shíhou", "Иногда"),
+        T("很少", "Hěn shǎo", "Редко"),
+        T("从来不会", "Cónglái bú huì", "Не бывает"),
+        T("没注意过", "Méi zhùyì guo", "Не замечала")
+      ],
+      ph: T("如果会，一般是什么时候？", "Rúguǒ huì, yìbān shì shénme shíhou?", "Если бывает, то когда") },
+    { t: T("跟你原来想的比起来，中文怎么样？", "Gēn nǐ yuánlái xiǎng de bǐ qǐlai, Zhōngwén zěnmeyàng?", "Каким оказался китайский по сравнению с ожиданиями?"),
+      o: [
+        T("更容易", "Gèng róngyì", "Проще"),
+        T("更难", "Gèng nán", "Сложнее"),
+        T("更有意思", "Gèng yǒu yìsi", "Интереснее"),
+        T("跟我想的一样", "Gēn wǒ xiǎng de yíyàng", "Таким, как ожидала"),
+        T("之前没想过", "Zhīqián méi xiǎng guo", "Ничего не ожидала")
+      ] },
+    { t: T("你觉得自己现在的中文怎么样？", "Nǐ juéde zìjǐ xiànzài de Zhōngwén zěnmeyàng?", "Как ты оцениваешь свой китайский сейчас?"),
+      o: [
+        T("让我开心", "Ràng wǒ kāixīn", "Радует"),
+        T("让我意外", "Ràng wǒ yìwài", "Удивляет"),
+        T("跟我想的差不多", "Gēn wǒ xiǎng de chàbuduō", "Как и ожидала"),
+        T("想学得更好", "Xiǎng xué de gèng hǎo", "Хочется большего"),
+        T("没想过", "Méi xiǎng guo", "Не задумывалась")
+      ] },
+    { t: T("关于你的中文，家人和朋友会说什么？", "Guānyú nǐ de Zhōngwén, jiārén hé péngyou huì shuō shénme?", "Что говорят близкие о твоём китайском?"),
+      o: [
+        T("夸我", "Kuā wǒ", "Хвалят"),
+        T("觉得惊讶", "Juéde jīngyà", "Удивляются"),
+        T("开我玩笑", "Kāi wǒ wánxiào", "Подшучивают"),
+        T("什么都不说", "Shénme dōu bù shuō", "Ничего не говорят"),
+        T("我们不聊这个", "Wǒmen bù liáo zhège", "Не обсуждаем")
+      ] },
+    { t: T("接下来你想怎么学？", "Jiēxiàlái nǐ xiǎng zěnme xué?", "Как хочется учиться дальше?"),
+      o: [
+        T("保持现在的节奏", "Bǎochí xiànzài de jiézòu", "Продолжать в том же ритме"),
+        T("多学一点", "Duō xué yìdiǎn", "Заниматься больше"),
+        T("休息一下", "Xiūxi yíxià", "Сделать паузу"),
+        T("定一个新目标", "Dìng yí gè xīn mùbiāo", "Поставить новую цель"),
+        T("还不知道", "Hái bù zhīdào", "Пока не знаю")
+      ] },
+    { t: T("学中文的时候，有哪些词、句子或者事情让你印象深刻？", "Xué Zhōngwén de shíhou, yǒu nǎxiē cí, jùzi huòzhě shìqing ràng nǐ yìnxiàng shēnkè?", "Какие слова, фразы или случаи с китайским тебе запомнились?"),
+      free: true,
+      ph: T("一个词、一句话或者一件事，可以写几个", "Yí gè cí, yí jù huà huòzhě yí jiàn shì, kěyǐ xiě jǐ gè", "Слово, фраза или случай. Можно несколько") },
+    { t: T("你一般在哪儿学中文？周围有什么？", "Nǐ yìbān zài nǎr xué Zhōngwén? Zhōuwéi yǒu shénme?", "Где ты обычно занимаешься китайским и что вокруг?"),
+      free: true,
+      ph: T("简单写写地方和周围的环境", "Jiǎndān xiěxie dìfang hé zhōuwéi de huánjìng", "Пара слов о месте и обстановке") },
+    { t: T("当你想到自己的中文时，脑子里会出现什么话？", "Dāng nǐ xiǎngdào zìjǐ de Zhōngwén shí, nǎozi li huì chūxiàn shénme huà?", "Какая фраза приходит в голову, когда думаешь о своём китайском?"),
+      free: true,
+      ph: T("一句话就好，中文或者俄语都可以", "Yí jù huà jiù hǎo, Zhōngwén huòzhě Éyǔ dōu kěyǐ", "Одна фраза, как есть. Можно по-китайски или по-русски") }
+  ];
+
+  var UI = {
+    title: T("关于你学中文的歌", "Guānyú nǐ xué Zhōngwén de gē", "Песня про то, как ты учишь китайский"),
+    intro: T("你好！我想写一首关于你学中文的歌，很想听听你的感受。答案没有对错，选第一个想到的就可以。可以选几个，也可以用自己的话写，中文、俄语都可以。",
+             "Nǐ hǎo! Wǒ xiǎng xiě yì shǒu guānyú nǐ xué Zhōngwén de gē, hěn xiǎng tīngting nǐ de gǎnshòu. Dá'àn méiyǒu duì cuò, xuǎn dì-yī gè xiǎngdào de jiù kěyǐ. Kěyǐ xuǎn jǐ gè, yě kěyǐ yòng zìjǐ de huà xiě, Zhōngwén, Éyǔ dōu kěyǐ.",
+             "Привет! Хочу написать песню про то, как ты учишь китайский, и мне очень интересно, как это для тебя. Правильных ответов здесь нет, можно выбрать то, что первым откликнется. Подойдут и несколько вариантов сразу, и свои слова, по-китайски или по-русски."),
+    length: T("12个问题，大约四分钟。", "Shí'èr gè wèntí, dàyuē sì fēnzhōng.", "12 вопросов, около четырёх минут."),
+    saved: T("回答会保存在这里。可以随时停下，以后打开同一个链接继续。", "Huídá huì bǎocún zài zhèlǐ. Kěyǐ suíshí tíngxià, yǐhòu dǎkāi tóng yí gè liànjiē jìxù.", "Ответы сохраняются на этом устройстве. Можно прерваться в любой момент и вернуться по той же ссылке: продолжишь с того места, где остановилась."),
+    noSave: T("这个浏览器不能保存回答，最好一次做完。", "Zhège liúlǎnqì bù néng bǎocún huídá, zuìhǎo yí cì zuò wán.", "Этот браузер не сохраняет ответы (так бывает в приватном режиме). Если закрыть страницу, ответы пропадут. Лучше пройти анкету за один раз или открыть ссылку в обычной вкладке."),
+    many: T("可以多选", "Kěyǐ duō xuǎn", "Можно несколько"),
+    reask: T("请换个问法", "Qǐng huàn ge wènfǎ", "Переформулируй вопрос"),
+    own: T("或者用自己的话写", "Huòzhě yòng zìjǐ de huà xiě", "Или своими словами"),
+    yours: T("你的回答", "Nǐ de huídá", "Твой ответ"),
+    voice: T("想用语音输入？点一下输入框，再点键盘上的麦克风。", "Xiǎng yòng yǔyīn shūrù? Diǎn yíxià shūrùkuàng, zài diǎn jiànpán shang de màikèfēng.", "Удобнее голосом? Нажми на поле, потом на микрофон на клавиатуре телефона."),
+    start: T("开始", "Kāishǐ", "Начать"),
+    resume: T("继续", "Jìxù", "Продолжить"),
+    next: T("下一题", "Xià yì tí", "Дальше"),
+    skip: T("跳过", "Tiàoguò", "Пропустить"),
+    done: T("完成", "Wánchéng", "Готово"),
+    back: T("上一题", "Shàng yì tí", "Назад"),
+    thanks: T("完成了，谢谢！", "Wánchéng le, xièxie!", "Готово. Спасибо!"),
+    send: T("麻烦你复制回答，发给我。我会用这些回答来写歌。", "Máfan nǐ fùzhì huídá, fā gěi wǒ. Wǒ huì yòng zhèxiē huídá lái xiě gē.", "Если не сложно, скопируй ответы и пришли мне. Из них получится песня."),
+    allAnswers: T("你的回答", "Nǐ de huídá", "Твои ответы"),
+    copy: T("复制回答", "Fùzhì huídá", "Скопировать ответы"),
+    edit: T("修改回答", "Xiūgǎi huídá", "Изменить ответы"),
+    copied: T("复制好了，发给我吧。", "Fùzhì hǎo le, fā gěi wǒ ba.", "Скопировано. Теперь вставь в сообщение мне."),
+    copyFail: T("没能自动复制。文字已经选中，长按就能复制。", "Méi néng zìdòng fùzhì. Wénzì yǐjīng xuǎnzhòng, cháng'àn jiù néng fùzhì.", "Не получилось скопировать само. Текст выделен: нажми на него и удерживай, чтобы скопировать.")
+  };
+
+  var view = { py: false, ru: false };
+  var state = { step: -1, savedStep: -1, ans: Q.map(function () { return { sel: [], own: "" }; }) };
+  var storageOk = (function () {
+    try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); return true; } catch (e) { return false; }
+  })();
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (saved && Array.isArray(saved.ans) && saved.ans.length === Q.length) {
+      state.ans = saved.ans;
+      if (typeof saved.step === "number" && saved.step >= 0 && saved.step <= Q.length) {
+        state.savedStep = saved.step;
+      }
+    }
+    var v = JSON.parse(localStorage.getItem(VIEW_KEY) || "null");
+    if (v) { view.py = !!v.py; view.ru = !!v.ru; }
+  } catch (e) {}
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify({ ans: state.ans, step: state.step })); } catch (e) {}
+  }
+  function saveView() {
+    try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) {}
+  }
+  function applyView() {
+    var r = document.documentElement;
+    r.classList.toggle("show-py", view.py);
+    r.classList.toggle("show-ru", view.ru);
+  }
+
+  var app = document.getElementById("app");
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  // block with Chinese, pinyin and Russian lines
+  function tri(tag, cls, t) {
+    var n = el(tag, (cls ? cls + " " : "") + "tri");
+    var zh = el("span", "zh", t.zh);
+    zh.lang = "zh-Hans";
+    n.appendChild(zh);
+    var py = el("span", "py", t.py);
+    py.lang = "zh-Latn-pinyin";
+    n.appendChild(py);
+    var ru = el("span", "ru", t.ru);
+    ru.lang = "ru";
+    n.appendChild(ru);
+    return n;
+  }
+
+  // button label: Chinese, plus Russian after a dot when translation is on
+  function btnLabel(btn, t) {
+    btn.textContent = "";
+    var zh = el("span", null, t.zh);
+    zh.lang = "zh-Hans";
+    btn.appendChild(zh);
+    if (view.ru) {
+      var ru = el("span", "ru-inline", " · " + t.ru);
+      ru.lang = "ru";
+      ru.style.fontFamily = "var(--font-ru)";
+      ru.style.fontWeight = "500";
+      btn.appendChild(ru);
+    }
+  }
+
+  function placeholder(t) {
+    return view.ru ? t.zh + " · " + t.ru : t.zh;
+  }
+
+  function toolbar() {
+    var bar = el("div", "toolbar");
+    [["py", "拼音"], ["ru", "Перевод"]].forEach(function (pair) {
+      var b = el("button", "toggle", pair[1]);
+      b.type = "button";
+      b.setAttribute("data-lang", pair[0]);
+      b.setAttribute("aria-pressed", view[pair[0]] ? "true" : "false");
+      b.addEventListener("click", function () {
+        view[pair[0]] = !view[pair[0]];
+        saveView();
+        applyView();
+        render();
+      });
+      bar.appendChild(b);
+    });
+    return bar;
+  }
+
+  function answered(i) {
+    var a = state.ans[i];
+    return a.sel.length > 0 || a.own.trim() !== "" || !!a.re;
+  }
+
+  function header(i) {
+    var top = el("div", "top");
+    var seal = el("div", "seal", HAN[i]);
+    seal.setAttribute("aria-hidden", "true");
+    var prog = el("div", "progress");
+    var n = i + 1;
+    prog.appendChild(tri("div", "progress-label",
+      T("第 " + n + " 题，共 " + Q.length + " 题", "Dì " + n + " tí, gòng " + Q.length + " tí", "Вопрос " + n + " из " + Q.length)));
+    var track = el("div", "track");
+    var fill = el("div", "fill");
+    fill.style.width = Math.round((n / Q.length) * 100) + "%";
+    track.appendChild(fill);
+    prog.appendChild(track);
+    top.appendChild(seal);
+    top.appendChild(prog);
+    return top;
+  }
+
+  function go(step) {
+    state.step = step;
+    state.savedStep = step;
+    save();
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  function renderQuestion(i) {
+    var q = Q[i];
+    var a = state.ans[i];
+    app.appendChild(header(i));
+
+    var card = el("section", "card");
+    var h = tri("h2", null, q.t);
+    h.id = "q-title";
+    card.appendChild(h);
+
+    var nextBtn = el("button", "btn btn-primary");
+    nextBtn.type = "button";
+    function updateNext() {
+      var last = i === Q.length - 1;
+      btnLabel(nextBtn, answered(i) ? (last ? UI.done : UI.next) : UI.skip);
+    }
+
+    var reBtn = el("button", "opt opt-re");
+    reBtn.type = "button";
+    reBtn.id = "q" + i + "-re";
+    reBtn.setAttribute("aria-pressed", a.re ? "true" : "false");
+    reBtn.appendChild(el("span", "letter", "?"));
+    reBtn.appendChild(tri("span", null, UI.reask));
+    var optButtons = [];
+    reBtn.addEventListener("click", function () {
+      a.re = !a.re;
+      reBtn.setAttribute("aria-pressed", a.re ? "true" : "false");
+      if (a.re) {
+        a.sel = [];
+        optButtons.forEach(function (ob) { ob.setAttribute("aria-pressed", "false"); });
+      }
+      save();
+      updateNext();
+    });
+
+    if (!q.free) {
+      card.appendChild(tri("p", "muted", UI.many));
+      var opts = el("div", "options");
+      opts.setAttribute("role", "group");
+      opts.setAttribute("aria-labelledby", "q-title");
+      q.o.forEach(function (t, k) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.id = "q" + i + "-o" + k;
+        b.setAttribute("aria-pressed", a.sel.indexOf(k) !== -1 ? "true" : "false");
+        b.appendChild(el("span", "letter", LETTERS[k]));
+        b.appendChild(tri("span", null, t));
+        b.addEventListener("click", function () {
+          var pos = a.sel.indexOf(k);
+          if (pos === -1) a.sel.push(k); else a.sel.splice(pos, 1);
+          a.sel.sort();
+          b.setAttribute("aria-pressed", pos === -1 ? "true" : "false");
+          if (a.re) { a.re = false; reBtn.setAttribute("aria-pressed", "false"); }
+          save();
+          updateNext();
+        });
+        optButtons.push(b);
+        opts.appendChild(b);
+      });
+      opts.appendChild(reBtn);
+      card.appendChild(opts);
+    }
+
+    var field = el("div", "field");
+    var lab = tri("label", null, q.free ? UI.yours : UI.own);
+    lab.setAttribute("for", "own-" + i);
+    var input = q.free ? el("textarea") : el("input");
+    if (!q.free) input.type = "text";
+    input.id = "own-" + i;
+    input.value = a.own;
+    if (q.ph) input.placeholder = placeholder(q.ph);
+    input.addEventListener("input", function () {
+      a.own = input.value;
+      save();
+      updateNext();
+    });
+    field.appendChild(lab);
+    field.appendChild(input);
+    field.appendChild(tri("p", "hint", UI.voice));
+    card.appendChild(field);
+    if (q.free) card.appendChild(reBtn);
+
+    var nav = el("div", "nav");
+    var back = el("button", "btn btn-ghost");
+    back.type = "button";
+    btnLabel(back, UI.back);
+    back.addEventListener("click", function () { go(i - 1); });
+    nextBtn.addEventListener("click", function () { go(i + 1); });
+    updateNext();
+    nav.appendChild(back);
+    nav.appendChild(nextBtn);
+    card.appendChild(nav);
+    app.appendChild(card);
+  }
+
+  function buildSummary() {
+    var lines = ["Ответы для песни про китайский", ""];
+    Q.forEach(function (q, i) {
+      var a = state.ans[i];
+      var parts = [];
+      if (a.re) parts.push("просит переформулировать вопрос");
+      a.sel.forEach(function (k) { parts.push(LETTERS[k] + ") " + q.o[k].zh + " (" + q.o[k].ru + ")"); });
+      if (a.own.trim()) parts.push((q.free ? "" : "своё: ") + a.own.trim());
+      lines.push((i + 1) + ". " + q.t.ru + " / " + q.t.zh);
+      lines.push("   " + (parts.length ? parts.join("; ") : "пропущено"));
+    });
+    return lines.join("\n");
+  }
+
+  function setStatus(node, t) {
+    node.textContent = "";
+    node.appendChild(tri("span", null, t));
+  }
+
+  function renderFinal() {
+    var card = el("section", "card");
+    var seal = el("div", "seal seal-big", "谢谢");
+    seal.setAttribute("aria-hidden", "true");
+    card.appendChild(seal);
+    card.appendChild(tri("h1", null, UI.thanks));
+    card.appendChild(tri("p", null, UI.send));
+
+    var field = el("div", "field");
+    var lab = tri("label", null, UI.allAnswers);
+    lab.setAttribute("for", "summary");
+    var ta = el("textarea", "summary");
+    ta.id = "summary";
+    ta.readOnly = true;
+    ta.value = buildSummary();
+    field.appendChild(lab);
+    field.appendChild(ta);
+    card.appendChild(field);
+
+    var status = el("div", "status");
+    status.setAttribute("role", "status");
+
+    var copy = el("button", "btn btn-primary");
+    copy.type = "button";
+    btnLabel(copy, UI.copy);
+    copy.addEventListener("click", function () {
+      function fallback() {
+        ta.focus();
+        ta.select();
+        setStatus(status, UI.copyFail);
+      }
+      try {
+        navigator.clipboard.writeText(ta.value).then(function () {
+          setStatus(status, UI.copied);
+        }, fallback);
+      } catch (e) { fallback(); }
+    });
+
+    var edit = el("button", "btn btn-ghost");
+    edit.type = "button";
+    btnLabel(edit, UI.edit);
+    edit.addEventListener("click", function () { go(0); });
+
+    var nav = el("div", "nav");
+    nav.appendChild(edit);
+    nav.appendChild(copy);
+    card.appendChild(nav);
+    card.appendChild(status);
+    app.appendChild(card);
+  }
+
+  function renderIntro() {
+    var card = el("section", "card");
+    card.appendChild(tri("h1", null, UI.title));
+    card.appendChild(tri("p", null, UI.intro));
+    card.appendChild(tri("p", "muted", UI.length));
+    if (!storageOk) {
+      var warn = tri("div", "warn", UI.noSave);
+      warn.setAttribute("role", "note");
+      card.appendChild(warn);
+    } else {
+      card.appendChild(tri("p", "muted", UI.saved));
+    }
+    var nav = el("div", "nav");
+    var resume = state.savedStep >= 0;
+    var start = el("button", "btn btn-primary");
+    start.type = "button";
+    btnLabel(start, resume ? UI.resume : UI.start);
+    start.addEventListener("click", function () { go(resume ? state.savedStep : 0); });
+    nav.appendChild(start);
+    card.appendChild(nav);
+    app.appendChild(card);
+  }
+
+  function render() {
+    app.textContent = "";
+    app.appendChild(toolbar());
+    if (state.step < 0) renderIntro();
+    else if (state.step < Q.length) renderQuestion(state.step);
+    else renderFinal();
+  }
+
+  applyView();
+  render();
+})();
+</script>
+</body>
+</html>
