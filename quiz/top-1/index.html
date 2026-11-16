@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Рывок в топ-1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* layout: one question per screen; the rank chip climbs #10 → #1 as she answers */
+  --bg: #eef3f1;
+  --surface: #ffffff;
+  --ink: #15241f;
+  --muted: #5a6b65;
+  --line: #d3dfda;
+  --shell: #1f6b5a;
+  --shell-soft: #dcebe6;
+  --on-shell: #ffffff;
+  --gold: #a87710;
+  --gold-soft: #fbf0d6;
+  --font-display: "Unbounded", "Arial Black", sans-serif;
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1a17;
+    --surface: #16241f;
+    --ink: #e7f0ec;
+    --muted: #9db0a9;
+    --line: #2b3f37;
+    --shell: #5fc0a3;
+    --shell-soft: #1d3a31;
+    --on-shell: #0d1714;
+    --gold: #f0bd4f;
+    --gold-soft: #3a2f14;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1a17;
+  --surface: #16241f;
+  --ink: #e7f0ec;
+  --muted: #9db0a9;
+  --line: #2b3f37;
+  --shell: #5fc0a3;
+  --shell-soft: #1d3a31;
+  --on-shell: #0d1714;
+  --gold: #f0bd4f;
+  --gold-soft: #3a2f14;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.rank {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--gold);
+  background: var(--gold-soft);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-variant-numeric: tabular-nums;
+  min-width: 64px;
+  text-align: center;
+}
+.progress {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.progress-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+.fill {
+  height: 100%;
+  background: var(--shell);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  margin: 0;
+  text-wrap: balance;
+  line-height: 1.35;
+}
+h1 { font-size: 1.35rem; }
+h2 { font-size: 1.12rem; }
+p { margin: 0; }
+.muted { color: var(--muted); font-size: 0.92rem; }
+.hint { color: var(--muted); font-size: 0.82rem; }
+.warn {
+  background: var(--gold-soft);
+  border: 1.5px solid var(--gold);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.92rem;
+}
+.options {
+  display: grid;
+  gap: 10px;
+}
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 54px;
+  padding: 12px 14px;
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+@media (hover: hover) { .opt:hover { border-color: var(--shell); } }
+.opt[aria-pressed="true"] {
+  border-color: var(--shell);
+  background: var(--shell-soft);
+}
+.letter {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.8rem;
+  background: var(--shell-soft);
+  color: var(--shell);
+}
+.opt[aria-pressed="true"] .letter {
+  background: var(--shell);
+  color: var(--on-shell);
+}
+.opt-re { border-style: dashed; }
+.opt-re .letter { background: var(--gold-soft); color: var(--gold); }
+@media (hover: hover) { .opt-re:hover { border-color: var(--gold); } }
+.opt-re[aria-pressed="true"] { border-color: var(--gold); border-style: solid; background: var(--gold-soft); }
+.opt-re[aria-pressed="true"] .letter { background: var(--gold); color: var(--on-shell); }
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field label {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+input[type="text"], textarea {
+  width: 100%;
+  font: inherit;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+}
+textarea { resize: vertical; min-height: 96px; }
+input[type="text"]:focus, textarea:focus { border-color: var(--shell); outline: none; }
+.nav {
+  display: flex;
+  gap: 12px;
+}
+.btn {
+  font: inherit;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  min-height: 52px;
+}
+.btn-primary {
+  flex: 1;
+  background: var(--shell);
+  color: var(--on-shell);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.btn:focus-visible, .opt:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+.summary {
+  min-height: 260px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.status {
+  font-size: 0.9rem;
+  color: var(--shell);
+  min-height: 1.4em;
+}
+.big-rank {
+  align-self: flex-start;
+  font-size: 1.6rem;
+  padding: 8px 18px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fill, .opt { transition: none; }
+}
+</style>
+</head>
+<body>
+<main class="wrap" id="app">
+  <section class="card">
+    <h1>Песня про твой рывок в топ-1</h1>
+    <p>Привет! Хочу написать песню про твой рывок в топ-1, и мне очень интересно, как это было для тебя. Правильных ответов здесь нет, можно выбрать то, что первым откликнется. Подойдут и несколько вариантов сразу, и свои слова.</p>
+    <p class="muted">10 вопросов, около трёх минут.</p>
+    <p class="muted">Ответы сохраняются на этом устройстве. Можно прерваться в любой момент и вернуться по той же ссылке: продолжишь с того места, где остановилась.</p>
+    <div class="nav"><button class="btn btn-primary" id="start" type="button">Начать</button></div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var LETTERS = ["А", "Б", "В", "Г", "Д"];
+  var KEY = "toplist-anketa-v4";
+  var Q = [
+    { t: "Первая реакция, когда увидела себя на первом месте?",
+      o: ["Громко обрадовалась", "Не сразу поверила", "Тихо улыбнулась", "Почувствовала облегчение", "Восприняла спокойно"] },
+    { t: "Как пришло решение потратить накопленное?",
+      o: ["Планировала заранее", "Решила в тот же день", "Спонтанно", "Долго думала"] },
+    { t: "Чего тебе хотелось в тот момент?",
+      o: ["Занять первое место", "Проверить себя", "Потратить накопленное", "Почувствовать азарт", "Получить награды"] },
+    { t: "Какими были для тебя эти 400+ дней?",
+      o: ["Спокойными", "Приятными", "Однообразными", "Тяжёлыми", "Не задумывалась"] },
+    { t: "Что ты чувствовала, когда тратила накопленное?",
+      o: ["Азарт", "Волнение", "Лёгкость", "Неловкость", "Спокойствие"] },
+    { t: "Как отреагировал клан?",
+      o: ["Поздравили", "Удивились", "Были недовольны", "Никак", "Пока не знаю"] },
+    { t: "Какое ощущение сейчас, когда всё позади?",
+      o: ["Радость", "Свобода", "Сожаление", "Гордость", "Хочется начать заново"] },
+    { t: "Повторила бы?",
+      o: ["Да", "Да, но не скоро", "Нет", "Не знаю"] },
+    { t: "Где ты была в тот момент и что было вокруг?", free: true,
+      ph: "Пара слов о месте и обстановке" },
+    { t: "Что ты сказала вслух или подумала, когда всё закончилось?", free: true,
+      ph: "Одна фраза, как есть" }
+  ];
+
+  var state = { step: -1, savedStep: -1, ans: Q.map(function () { return { sel: [], own: "" }; }) };
+  var storageOk = (function () {
+    try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); return true; } catch (e) { return false; }
+  })();
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (saved && Array.isArray(saved.ans) && saved.ans.length === Q.length) {
+      state.ans = saved.ans;
+      if (typeof saved.step === "number" && saved.step >= 0 && saved.step <= Q.length) {
+        state.savedStep = saved.step;
+      }
+    }
+  } catch (e) {}
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify({ ans: state.ans, step: state.step })); } catch (e) {}
+  }
+
+  var app = document.getElementById("app");
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function answered(i) {
+    var a = state.ans[i];
+    return a.sel.length > 0 || a.own.trim() !== "" || !!a.re;
+  }
+
+  function header(i) {
+    var top = el("div", "top");
+    var rank = el("div", "rank", "#" + (Q.length - i));
+    rank.setAttribute("aria-hidden", "true");
+    var prog = el("div", "progress");
+    prog.appendChild(el("div", "progress-label", "Вопрос " + (i + 1) + " из " + Q.length));
+    var track = el("div", "track");
+    var fill = el("div", "fill");
+    fill.style.width = Math.round(((i + 1) / Q.length) * 100) + "%";
+    track.appendChild(fill);
+    prog.appendChild(track);
+    top.appendChild(rank);
+    top.appendChild(prog);
+    return top;
+  }
+
+  function go(step) {
+    state.step = step;
+    state.savedStep = step;
+    save();
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  function renderQuestion(i) {
+    var q = Q[i];
+    var a = state.ans[i];
+    app.appendChild(header(i));
+
+    var card = el("section", "card");
+    var h = el("h2", null, q.t);
+    h.id = "q-title";
+    card.appendChild(h);
+
+    var nextBtn = el("button", "btn btn-primary");
+    nextBtn.type = "button";
+    function updateNext() {
+      var last = i === Q.length - 1;
+      nextBtn.textContent = answered(i) ? (last ? "Готово" : "Дальше") : "Пропустить";
+    }
+
+    var reBtn = el("button", "opt opt-re");
+    reBtn.type = "button";
+    reBtn.id = "q" + i + "-re";
+    reBtn.setAttribute("aria-pressed", a.re ? "true" : "false");
+    reBtn.appendChild(el("span", "letter", "?"));
+    reBtn.appendChild(el("span", null, "Переформулируй вопрос"));
+    var optButtons = [];
+    reBtn.addEventListener("click", function () {
+      a.re = !a.re;
+      reBtn.setAttribute("aria-pressed", a.re ? "true" : "false");
+      if (a.re) {
+        a.sel = [];
+        optButtons.forEach(function (ob) { ob.setAttribute("aria-pressed", "false"); });
+      }
+      save();
+      updateNext();
+    });
+
+    if (!q.free) {
+      card.appendChild(el("p", "muted", "Можно несколько"));
+      var opts = el("div", "options");
+      opts.setAttribute("role", "group");
+      opts.setAttribute("aria-labelledby", "q-title");
+      q.o.forEach(function (text, k) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.id = "q" + i + "-o" + k;
+        b.setAttribute("aria-pressed", a.sel.indexOf(k) !== -1 ? "true" : "false");
+        b.appendChild(el("span", "letter", LETTERS[k]));
+        b.appendChild(el("span", null, text));
+        b.addEventListener("click", function () {
+          var pos = a.sel.indexOf(k);
+          if (pos === -1) a.sel.push(k); else a.sel.splice(pos, 1);
+          a.sel.sort();
+          b.setAttribute("aria-pressed", pos === -1 ? "true" : "false");
+          if (a.re) { a.re = false; reBtn.setAttribute("aria-pressed", "false"); }
+          save();
+          updateNext();
+        });
+        optButtons.push(b);
+        opts.appendChild(b);
+      });
+      opts.appendChild(reBtn);
+      card.appendChild(opts);
+    }
+
+    var field = el("div", "field");
+    var lab = el("label", null, q.free ? "Твой ответ" : "Или своими словами");
+    lab.setAttribute("for", "own-" + i);
+    var input = q.free ? el("textarea") : el("input");
+    if (!q.free) input.type = "text";
+    input.id = "own-" + i;
+    input.value = a.own;
+    if (q.ph) input.placeholder = q.ph;
+    input.addEventListener("input", function () {
+      a.own = input.value;
+      save();
+      updateNext();
+    });
+    field.appendChild(lab);
+    field.appendChild(input);
+    field.appendChild(el("p", "hint", "Удобнее голосом? Нажми на поле, потом на микрофон на клавиатуре телефона."));
+    card.appendChild(field);
+    if (q.free) card.appendChild(reBtn);
+
+    var nav = el("div", "nav");
+    var back = el("button", "btn btn-ghost", "Назад");
+    back.type = "button";
+    back.addEventListener("click", function () { go(i - 1); });
+    nextBtn.addEventListener("click", function () { go(i + 1); });
+    updateNext();
+    nav.appendChild(back);
+    nav.appendChild(nextBtn);
+    card.appendChild(nav);
+    app.appendChild(card);
+  }
+
+  function buildSummary() {
+    var lines = ["Ответы для песни", ""];
+    Q.forEach(function (q, i) {
+      var a = state.ans[i];
+      var parts = [];
+      if (a.re) parts.push("просит переформулировать вопрос");
+      a.sel.forEach(function (k) { parts.push(LETTERS[k] + ") " + q.o[k]); });
+      if (a.own.trim()) parts.push((q.free ? "" : "своё: ") + a.own.trim());
+      lines.push((i + 1) + ". " + q.t);
+      lines.push("   " + (parts.length ? parts.join("; ") : "пропущено"));
+    });
+    return lines.join("\n");
+  }
+
+  function renderFinal() {
+    var card = el("section", "card");
+    card.appendChild(el("div", "rank big-rank", "#1"));
+    card.appendChild(el("h1", null, "Готово. Спасибо!"));
+    card.appendChild(el("p", null, "Если не сложно, скопируй ответы и пришли мне в личку. Из них получится песня."));
+
+    var field = el("div", "field");
+    var lab = el("label", null, "Твои ответы");
+    lab.setAttribute("for", "summary");
+    var ta = el("textarea", "summary");
+    ta.id = "summary";
+    ta.readOnly = true;
+    ta.value = buildSummary();
+    field.appendChild(lab);
+    field.appendChild(ta);
+    card.appendChild(field);
+
+    var status = el("p", "status");
+    status.setAttribute("role", "status");
+
+    var copy = el("button", "btn btn-primary", "Скопировать ответы");
+    copy.type = "button";
+    copy.addEventListener("click", function () {
+      function fallback() {
+        ta.focus();
+        ta.select();
+        status.textContent = "Не получилось скопировать само. Текст выделен: нажми на него и удерживай, чтобы скопировать.";
+      }
+      try {
+        navigator.clipboard.writeText(ta.value).then(function () {
+          status.textContent = "Скопировано. Теперь вставь в сообщение мне.";
+        }, fallback);
+      } catch (e) { fallback(); }
+    });
+
+    var edit = el("button", "btn btn-ghost", "Изменить ответы");
+    edit.type = "button";
+    edit.addEventListener("click", function () { go(0); });
+
+    var nav = el("div", "nav");
+    nav.appendChild(edit);
+    nav.appendChild(copy);
+    card.appendChild(nav);
+    card.appendChild(status);
+    app.appendChild(card);
+  }
+
+  function renderIntro() {
+    var card = el("section", "card");
+    card.appendChild(el("h1", null, "Песня про твой рывок в топ-1"));
+    card.appendChild(el("p", null, "Привет! Хочу написать песню про твой рывок в топ-1, и мне очень интересно, как это было для тебя. Правильных ответов здесь нет, можно выбрать то, что первым откликнется. Подойдут и несколько вариантов сразу, и свои слова."));
+    card.appendChild(el("p", "muted", "10 вопросов, около трёх минут."));
+    if (!storageOk) {
+      var warn = el("p", "warn", "Этот браузер не сохраняет ответы (так бывает в приватном режиме). Если закрыть страницу, ответы пропадут. Лучше пройти анкету за один раз или открыть ссылку в обычной вкладке.");
+      warn.setAttribute("role", "note");
+      card.appendChild(warn);
+    }
+    if (storageOk) card.appendChild(el("p", "muted", "Ответы сохраняются на этом устройстве. Можно прерваться в любой момент и вернуться по той же ссылке: продолжишь с того места, где остановилась."));
+    var nav = el("div", "nav");
+    var resume = state.savedStep >= 0;
+    var start = el("button", "btn btn-primary", resume ? "Продолжить" : "Начать");
+    start.type = "button";
+    start.addEventListener("click", function () { go(resume ? state.savedStep : 0); });
+    nav.appendChild(start);
+    card.appendChild(nav);
+    app.appendChild(card);
+  }
+
+  function render() {
+    app.textContent = "";
+    if (state.step < 0) renderIntro();
+    else if (state.step < Q.length) renderQuestion(state.step);
+    else renderFinal();
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
