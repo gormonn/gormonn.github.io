@@ -84,7 +84,9 @@ body {
   display: block;
   width: 100%;
   max-width: 400px;
+  height: auto;
   aspect-ratio: 1;
+  object-fit: cover;
   border-radius: 6px;
   background: var(--blanket);
 }
@@ -230,8 +232,20 @@ html:not(.js) .player { display: none; }
 .chorus .quiet { font-weight: 500; margin-top: 0.5em; }
 .outro { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--paper); }
 
+/* timed lyrics: dim until sung, the current word in cardboard */
+.lyrics .hint { color: var(--dim); font-size: 0.85rem; margin: -18px 0 28px; }
+html:not(.js) .lyrics .hint { display: none; }
+.js .lyrics p[data-s] { cursor: pointer; }
+.lyrics .w { transition: color 0.2s ease; }
+.lyrics.karaoke p,
+.lyrics.karaoke .w { color: #7a8599; }
+.lyrics.karaoke .w.sung { color: var(--paper); }
+.lyrics.karaoke .adlib .w.sung { color: var(--cardboard); }
+.lyrics.karaoke .w.cur { color: var(--cardboard); }
+
 @media (prefers-reduced-motion: reduce) {
   .night { transition: none; }
+  .lyrics .w { transition: none; }
 }
 </style>
 </head>
@@ -270,81 +284,82 @@ html:not(.js) .player { display: none; }
     </a>
   </section>
 
-  <article class="lyrics">
+  <article class="lyrics" id="lyrics">
     <h2>Текст</h2>
+    <p class="hint">Нажми на строку, чтобы послушать с неё.</p>
 
     <div class="stanza">
       <span class="sr-only">Куплет 1.</span>
-      <p>День за днём: зашла, взяла, закрыла.</p>
-      <p>И коробки так и встали в ряд.</p>
-      <p>Не считала — много ли там было, —</p>
-      <p>просто так. Не к спеху. Пусть стоят.</p>
-      <p>А игра мигает: «Трать! Скорее!» —</p>
-      <p>ты в ответ — спокойное «потом».</p>
-      <p>Год с довеском. Кто ещё сумеет</p>
-      <p>столько ждать, не думая о том?</p>
+      <p data-s="18.27" data-e="21.41"><span class="w" data-t="18.27">День</span> <span class="w" data-t="18.53">за</span> <span class="w" data-t="18.76">днём:</span> <span class="w" data-t="19.10">зашла,</span> <span class="w" data-t="19.66">взяла,</span> <span class="w" data-t="20.67">закрыла.</span></p>
+      <p data-s="22.68" data-e="25.67"><span class="w" data-t="22.68">И</span> <span class="w" data-t="23.00">коробки</span> <span class="w" data-t="23.81">так</span> <span class="w" data-t="24.10">и</span> <span class="w" data-t="24.27">встали</span> <span class="w" data-t="25.04">в</span> <span class="w" data-t="25.09">ряд.</span></p>
+      <p data-s="27.08" data-e="30.15"><span class="w" data-t="27.08">Не</span> <span class="w" data-t="27.25">считала&nbsp;—</span> <span class="w" data-t="28.16">много</span> <span class="w" data-t="28.64">ли</span> <span class="w" data-t="28.98">там</span> <span class="w" data-t="29.57">было,&nbsp;—</span></p>
+      <p data-s="30.37" data-e="33.91"><span class="w" data-t="30.37">просто</span> <span class="w" data-t="30.91">так.</span> <span class="w" data-t="31.69">Не</span> <span class="w" data-t="31.78">к</span> <span class="w" data-t="31.88">спеху.</span> <span class="w" data-t="32.86">Пусть</span> <span class="w" data-t="33.33">стоят.</span></p>
+      <p data-s="35.88" data-e="39.08"><span class="w" data-t="35.88">А</span> <span class="w" data-t="36.22">игра</span> <span class="w" data-t="36.68">мигает:</span> <span class="w" data-t="37.44">«Трать!</span> <span class="w" data-t="38.18">Скорее!»&nbsp;—</span></p>
+      <p data-s="40.26" data-e="42.59"><span class="w" data-t="40.26">ты</span> <span class="w" data-t="40.41">в</span> <span class="w" data-t="40.56">ответ&nbsp;—</span> <span class="w" data-t="41.19">спокойное</span> <span class="w" data-t="42.20">«потом».</span></p>
+      <p data-s="44.62" data-e="47.73"><span class="w" data-t="44.62">Год</span> <span class="w" data-t="44.81">с</span> <span class="w" data-t="44.86">довеском.</span> <span class="w" data-t="45.72">Кто</span> <span class="w" data-t="46.15">ещё</span> <span class="w" data-t="46.75">сумеет</span></p>
+      <p data-s="47.82" data-e="50.97"><span class="w" data-t="47.82">столько</span> <span class="w" data-t="48.39">ждать,</span> <span class="w" data-t="49.30">не</span> <span class="w" data-t="49.53">думая</span> <span class="w" data-t="50.32">о</span> <span class="w" data-t="50.60">том?</span></p>
     </div>
 
     <div class="stanza">
       <span class="sr-only">Предприпев.</span>
-      <p>И однажды — кружок в календаре.</p>
-      <p>Срок назначен. Вдох. Пора.</p>
+      <p data-s="52.35" data-e="56.41"><span class="w" data-t="52.35">И</span> <span class="w" data-t="52.79">однажды&nbsp;—</span> <span class="w" data-t="54.73">кружок</span> <span class="w" data-t="55.24">в</span> <span class="w" data-t="55.29">календаре.</span></p>
+      <p data-s="56.53" data-e="60.63"><span class="w" data-t="56.53">Срок</span> <span class="w" data-t="56.98">назначен.</span> <span class="w" data-t="59.39">Вдох.</span> <span class="w" data-t="59.96">Пора.</span></p>
     </div>
 
     <div class="stanza chorus">
       <span class="sr-only">Припев.</span>
-      <p>Четыреста дней — и одна ночь!</p>
-      <p>Всё, что копила, — в бой, без резерва! <span class="adlib">(В бой!)</span></p>
-      <p>Четыреста дней — и одна ночь!</p>
-      <p>Заснёшь, как всегда. Проснёшься — первой! <span class="adlib">(Номер один!)</span></p>
+      <p data-s="62.47" data-e="66.35"><span class="w" data-t="62.47">Четыреста</span> <span class="w" data-t="63.55">дней&nbsp;—</span> <span class="w" data-t="64.73">и</span> <span class="w" data-t="65.11">одна</span> <span class="w" data-t="65.72">ночь!</span></p>
+      <p data-s="66.99" data-e="71.21"><span class="w" data-t="66.99">Всё,</span> <span class="w" data-t="67.28">что</span> <span class="w" data-t="67.59">копила,&nbsp;—</span> <span class="w" data-t="68.08">в</span> <span class="w" data-t="68.25">бой,</span> <span class="w" data-t="68.80">без</span> <span class="w" data-t="69.08">резерва!</span> <span class="adlib"><span class="w" data-t="70.23">(В</span> <span class="w" data-t="70.41">бой!)</span></span></p>
+      <p data-s="71.25" data-e="75.18"><span class="w" data-t="71.25">Четыреста</span> <span class="w" data-t="72.15">дней&nbsp;—</span> <span class="w" data-t="73.46">и</span> <span class="w" data-t="73.91">одна</span> <span class="w" data-t="74.44">ночь!</span></p>
+      <p data-s="75.56" data-e="83.61"><span class="w" data-t="75.56">Заснёшь,</span> <span class="w" data-t="76.14">как</span> <span class="w" data-t="76.25">всегда.</span> <span class="w" data-t="76.74">Проснёшься&nbsp;—</span> <span class="w" data-t="78.07">первой!</span> <span class="adlib"><span class="w" data-t="82.44">(Номер</span> <span class="w" data-t="83.14">один!)</span></span></p>
     </div>
 
     <div class="stanza">
       <span class="sr-only">Куплет 2.</span>
-      <p>Расписала: дата, час, минута.</p>
-      <p>Палец над экраном. Холодок.</p>
-      <p>Хватит или нет? А ну-ка, ну-ка!</p>
-      <p>Что лежало впрок — в один рывок.</p>
-      <p>Цифры вверх — и пульс за ними следом,</p>
-      <p>ты — вперёд: решила — не свернёшь.</p>
-      <p>Жми, смелей! Узнаешь всё с рассветом.</p>
-      <p>Сыпь до крошки — всё, что бережёшь!</p>
+      <p data-s="88.39" data-e="91.61"><span class="w" data-t="88.39">Расписала:</span> <span class="w" data-t="89.57">дата,</span> <span class="w" data-t="89.98">час,</span> <span class="w" data-t="90.57">минута.</span></p>
+      <p data-s="92.81" data-e="95.33"><span class="w" data-t="92.81">Палец</span> <span class="w" data-t="93.34">над</span> <span class="w" data-t="93.75">экраном.</span> <span class="w" data-t="94.36">Холодок.</span></p>
+      <p data-s="97.08" data-e="100.34"><span class="w" data-t="97.08">Хватит</span> <span class="w" data-t="97.71">или</span> <span class="w" data-t="98.19">нет?</span> <span class="w" data-t="98.55">А</span> <span class="w" data-t="98.68">ну-ка,</span> <span class="w" data-t="99.49">ну-ка!</span></p>
+      <p data-s="100.34" data-e="103.47"><span class="w" data-t="100.34">Что</span> <span class="w" data-t="100.67">лежало</span> <span class="w" data-t="101.36">впрок&nbsp;—</span> <span class="w" data-t="102.32">в</span> <span class="w" data-t="102.51">один</span> <span class="w" data-t="102.87">рывок.</span></p>
+      <p data-s="105.24" data-e="108.34"><span class="w" data-t="105.24">Цифры</span> <span class="w" data-t="105.84">вверх&nbsp;—</span> <span class="w" data-t="106.15">и</span> <span class="w" data-t="106.41">пульс</span> <span class="w" data-t="106.72">за</span> <span class="w" data-t="106.97">ними</span> <span class="w" data-t="107.47">следом,</span></p>
+      <p data-s="109.71" data-e="112.36"><span class="w" data-t="109.71">ты&nbsp;—</span> <span class="w" data-t="109.92">вперёд:</span> <span class="w" data-t="110.51">решила&nbsp;—</span> <span class="w" data-t="111.30">не</span> <span class="w" data-t="111.43">свернёшь.</span></p>
+      <p data-s="113.85" data-e="116.98"><span class="w" data-t="113.85">Жми,</span> <span class="w" data-t="114.11">смелей!</span> <span class="w" data-t="115.04">Узнаешь</span> <span class="w" data-t="115.59">всё</span> <span class="w" data-t="115.85">с</span> <span class="w" data-t="116.08">рассветом.</span></p>
+      <p data-s="117.73" data-e="120.90"><span class="w" data-t="117.73">Сыпь</span> <span class="w" data-t="118.06">до</span> <span class="w" data-t="118.36">крошки&nbsp;—</span> <span class="w" data-t="119.30">всё,</span> <span class="w" data-t="119.62">что</span> <span class="w" data-t="120.02">бережёшь!</span></p>
     </div>
 
     <div class="stanza">
       <span class="sr-only">Предприпев.</span>
-      <p>Телефон — на зарядку. Плед. Темно.</p>
-      <p>Ход твой сделан. Выдох. Спи.</p>
+      <p data-s="122.11" data-e="126.24"><span class="w" data-t="122.11">Телефон&nbsp;—</span> <span class="w" data-t="124.32">на</span> <span class="w" data-t="124.58">зарядку.</span> <span class="w" data-t="125.28">Плед.</span> <span class="w" data-t="125.84">Темно.</span></p>
+      <p data-s="126.48" data-e="130.26"><span class="w" data-t="126.48">Ход</span> <span class="w" data-t="126.73">твой</span> <span class="w" data-t="126.97">сделан.</span> <span class="w" data-t="129.17">Выдох.</span> <span class="w" data-t="129.85">Спи.</span></p>
     </div>
 
     <div class="stanza chorus">
       <span class="sr-only">Припев.</span>
-      <p>Четыреста дней — и одна ночь!</p>
-      <p>Всё, что копила, — в бой, без резерва! <span class="adlib">(В бой!)</span></p>
-      <p>Четыреста дней — и одна ночь!</p>
-      <p>Заснёшь, как всегда. Проснёшься — первой! <span class="adlib">(Номер один!)</span></p>
+      <p data-s="132.16" data-e="136.03"><span class="w" data-t="132.16">Четыреста</span> <span class="w" data-t="133.22">дней&nbsp;—</span> <span class="w" data-t="134.41">и</span> <span class="w" data-t="134.79">одна</span> <span class="w" data-t="134.86">ночь!</span></p>
+      <p data-s="136.67" data-e="140.47"><span class="w" data-t="136.67">Всё,</span> <span class="w" data-t="136.97">что</span> <span class="w" data-t="137.26">копила,&nbsp;—</span> <span class="w" data-t="137.77">в</span> <span class="w" data-t="137.94">бой,</span> <span class="w" data-t="138.50">без</span> <span class="w" data-t="138.76">резерва!</span> <span class="adlib"><span class="w" data-t="139.92">(В</span> <span class="w" data-t="140.07">бой!)</span></span></p>
+      <p data-s="140.87" data-e="144.72"><span class="w" data-t="140.87">Четыреста</span> <span class="w" data-t="141.94">дней&nbsp;—</span> <span class="w" data-t="143.01">и</span> <span class="w" data-t="143.52">одна</span> <span class="w" data-t="144.05">ночь!</span></p>
+      <p data-s="145.16" data-e="153.19"><span class="w" data-t="145.16">Заснёшь,</span> <span class="w" data-t="145.76">как</span> <span class="w" data-t="145.87">всегда.</span> <span class="w" data-t="146.37">Проснёшься&nbsp;—</span> <span class="w" data-t="147.65">первой!</span> <span class="adlib"><span class="w" data-t="151.97">(Номер</span> <span class="w" data-t="152.73">один!)</span></span></p>
     </div>
 
     <div class="stanza spoken">
       <span class="sr-only">Бридж, тихо, речитативом.</span>
-      <p>Ты спала — а верхняя строка твоя.</p>
-      <p>Черепашьим шагом — выше всех.</p>
-      <p>Утром — улыбка. Отлегло. Тихо, про себя.</p>
-      <p>Как у тебя выходит — не знаю.</p>
-      <p>Знаю одно: я бы так не смог.</p>
+      <p data-s="157.93" data-e="160.76"><span class="w" data-t="157.93">Ты</span> <span class="w" data-t="158.04">спала&nbsp;—</span> <span class="w" data-t="159.26">а</span> <span class="w" data-t="159.34">верхняя</span> <span class="w" data-t="159.88">строка</span> <span class="w" data-t="160.35">твоя.</span></p>
+      <p data-s="162.57" data-e="165.14"><span class="w" data-t="162.57">Черепашьим</span> <span class="w" data-t="163.32">шагом&nbsp;—</span> <span class="w" data-t="164.37">выше</span> <span class="w" data-t="164.72">всех.</span></p>
+      <p data-s="166.97" data-e="170.07"><span class="w" data-t="166.97">Утром&nbsp;—</span> <span class="w" data-t="167.88">улыбка.</span> <span class="w" data-t="168.38">Отлегло.</span> <span class="w" data-t="169.08">Тихо,</span> <span class="w" data-t="169.51">про</span> <span class="w" data-t="169.75">себя.</span></p>
+      <p data-s="171.36" data-e="174.45"><span class="w" data-t="171.36">Как</span> <span class="w" data-t="171.52">у</span> <span class="w" data-t="171.67">тебя</span> <span class="w" data-t="171.90">выходит&nbsp;—</span> <span class="w" data-t="173.94">не</span> <span class="w" data-t="174.07">знаю.</span></p>
+      <p data-s="175.67" data-e="178.89"><span class="w" data-t="175.67">Знаю</span> <span class="w" data-t="176.22">одно:</span> <span class="w" data-t="177.83">я</span> <span class="w" data-t="178.05">бы</span> <span class="w" data-t="178.16">так</span> <span class="w" data-t="178.38">не</span> <span class="w" data-t="178.47">смог.</span></p>
     </div>
 
     <div class="stanza chorus">
       <span class="sr-only">Финальный припев.</span>
-      <p>Четыреста дней — и одна ночь!</p>
-      <p>Всё, что копила, — в бой, без резерва! <span class="adlib">(В бой!)</span></p>
-      <p>Четыреста дней — и одна ночь!</p>
-      <p>Легла, как всегда. Проснулась — первой. <span class="adlib">(Номер один!)</span></p>
-      <p class="quiet">И никому ни слова.</p>
+      <p data-s="181.97" data-e="185.88"><span class="w" data-t="181.97">Четыреста</span> <span class="w" data-t="182.99">дней&nbsp;—</span> <span class="w" data-t="184.18">и</span> <span class="w" data-t="184.55">одна</span> <span class="w" data-t="185.09">ночь!</span></p>
+      <p data-s="186.43" data-e="190.16"><span class="w" data-t="186.43">Всё,</span> <span class="w" data-t="186.72">что</span> <span class="w" data-t="187.00">копила,&nbsp;—</span> <span class="w" data-t="187.52">в</span> <span class="w" data-t="187.62">бой,</span> <span class="w" data-t="188.26">без</span> <span class="w" data-t="188.38">резерва!</span> <span class="adlib"><span class="w" data-t="189.60">(В</span> <span class="w" data-t="189.77">бой!)</span></span></p>
+      <p data-s="190.62" data-e="194.41"><span class="w" data-t="190.62">Четыреста</span> <span class="w" data-t="191.63">дней&nbsp;—</span> <span class="w" data-t="192.77">и</span> <span class="w" data-t="193.19">одна</span> <span class="w" data-t="193.73">ночь!</span></p>
+      <p data-s="194.97" data-e="202.88"><span class="w" data-t="194.97">Легла,</span> <span class="w" data-t="195.44">как</span> <span class="w" data-t="195.56">всегда.</span> <span class="w" data-t="196.03">Проснулась&nbsp;—</span> <span class="w" data-t="197.39">первой.</span> <span class="adlib"><span class="w" data-t="201.73">(Номер</span> <span class="w" data-t="202.47">один!)</span></span></p>
+      <p class="quiet" data-s="205.78" data-e="207.54"><span class="w" data-t="205.78">И</span> <span class="w" data-t="206.21">никому</span> <span class="w" data-t="206.81">ни</span> <span class="w" data-t="206.96">слова.</span></p>
     </div>
 
     <div class="stanza">
-      <p class="outro">Ну ты даёшь.</p>
+      <p class="outro" data-s="210.54" data-e="211.30"><span class="w" data-t="210.54">Ну</span> <span class="w" data-t="210.76">ты</span> <span class="w" data-t="210.89">даёшь.</span></p>
     </div>
   </article>
 </main>
@@ -391,6 +406,80 @@ html:not(.js) .player { display: none; }
   }
   daysEl.appendChild(frag);
   cells.push(night);
+
+  /* ---------- timed lyrics (word timings from Suno's alignment) ---------- */
+  var lyricsEl = document.getElementById('lyrics');
+  var words = [].map.call(lyricsEl.querySelectorAll('.w'), function (el) {
+    return { el: el, t: parseFloat(el.getAttribute('data-t')) };
+  });
+  var lines = [].map.call(lyricsEl.querySelectorAll('p[data-s]'), function (el) {
+    return { el: el, t: parseFloat(el.getAttribute('data-s')), e: parseFloat(el.getAttribute('data-e')) };
+  });
+  var LEAD = 0.06; // light a word a hair early so it never feels late
+  var HOLD = 1.2;  // a line stays current this long after its last word
+  var sung = 0, curWord = -1, curLine = -1, lastLine = -1, karaoke = false;
+  var lastUserScroll = 0;
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function countUpTo(arr, t) { // how many items start at or before t
+    var lo = 0, hi = arr.length;
+    while (lo < hi) {
+      var mid = (lo + hi) >> 1;
+      if (arr[mid].t <= t) lo = mid + 1; else hi = mid;
+    }
+    return lo;
+  }
+  function isVisible(el) {
+    var r = el.getBoundingClientRect();
+    return r.bottom > 0 && r.top < window.innerHeight;
+  }
+  function follow(li) {
+    // scroll along only while the reader is looking at the lyrics and not scrolling by hand
+    if (lastLine < 0 || Date.now() - lastUserScroll < 4000) return;
+    if (!isVisible(lines[lastLine].el)) return;
+    var r = lines[li].el.getBoundingClientRect();
+    var vh = window.innerHeight;
+    if (r.top < vh * 0.2 || r.bottom > vh * 0.65) {
+      lines[li].el.scrollIntoView({ block: 'center', behavior: reducedMotion ? 'auto' : 'smooth' });
+    }
+  }
+  function renderLyrics(t) {
+    if (!karaoke) {
+      if (t <= 0 && audio.paused) return;
+      karaoke = true;
+      lyricsEl.classList.add('karaoke');
+    }
+    var tt = t + LEAD;
+    var j;
+    var k = countUpTo(words, tt);
+    if (k > sung) { for (j = sung; j < k; j++) words[j].el.classList.add('sung'); }
+    else if (k < sung) { for (j = k; j < sung; j++) words[j].el.classList.remove('sung'); }
+    sung = k;
+
+    var li = countUpTo(lines, tt) - 1;
+    if (li >= 0) {
+      var next = lines[li + 1];
+      if (tt >= Math.min(lines[li].e + HOLD, next ? next.t : Infinity)) li = -1;
+    }
+    if (li !== curLine) {
+      if (curLine >= 0) lines[curLine].el.classList.remove('cur');
+      if (li >= 0) {
+        lines[li].el.classList.add('cur');
+        follow(li);
+        lastLine = li;
+      }
+      curLine = li;
+    }
+    var cw = li >= 0 ? k - 1 : -1;
+    if (cw !== curWord) {
+      if (curWord >= 0) words[curWord].el.classList.remove('cur');
+      if (cw >= 0) words[cw].el.classList.add('cur');
+      curWord = cw;
+    }
+  }
+  ['wheel', 'touchmove', 'keydown'].forEach(function (ev) {
+    window.addEventListener(ev, function () { lastUserScroll = Date.now(); }, { passive: true });
+  });
 
   /* ---------- choosing the fastest source ---------- */
   var chosen = null;
@@ -487,6 +576,7 @@ html:not(.js) .player { display: none; }
     curEl.textContent = fmt(t);
     scrub.setAttribute('aria-valuenow', String(Math.floor(t)));
     scrub.setAttribute('aria-valuetext', fmt(t) + ' из ' + fmt(d));
+    renderLyrics(t);
   }
 
   var raf = 0;
@@ -598,6 +688,15 @@ html:not(.js) .player { display: none; }
 
   document.addEventListener('keydown', function (e) {
     if (e.key === ' ' && e.target === document.body) { e.preventDefault(); toggle(); }
+  });
+
+  /* tap a lyric line to play from it */
+  lyricsEl.addEventListener('click', function (e) {
+    var p = e.target.closest ? e.target.closest('p[data-s]') : null;
+    if (!p) return;
+    if (window.getSelection && String(window.getSelection())) return; // selecting text, not seeking
+    seekTo(Math.max(0, parseFloat(p.getAttribute('data-s')) - 0.4));
+    if (audio.paused || audio.ended) toggle();
   });
 
   /* ---------- download from the fastest source, with progress ---------- */
