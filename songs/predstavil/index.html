@@ -11,20 +11,16 @@
 <meta property="og:title" content="Представил">
 <meta property="og:description" content="Ещё одна песня про твой топ-1">
 <meta property="og:url" content="https://gormonn.github.io/songs/predstavil/">
-<meta property="og:image" content="https://gormonn.github.io/songs/predstavil/cover.jpg">
-<meta property="og:image:width" content="360">
-<meta property="og:image:height" content="360">
 <meta property="og:audio" content="https://gormonn.github.io/songs/predstavil/predstavil.mp3">
 <meta property="og:audio:type" content="audio/mpeg">
 <meta name="twitter:card" content="summary">
-<link rel="icon" href="cover.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js');</script>
 <style>
 :root {
-  /* palette taken from the cover: film frame, morning screen, desk wood, shadows */
+  /* palette taken from the song's original cover art: film frame, morning screen, desk wood, shadows */
   --frame: #9daaa9;
   --screen: #f6f6f5;
   --ink: #2c2e29;
@@ -88,21 +84,11 @@ body {
   .side { position: sticky; top: 44px; }
 }
 
-/* ---------- side: cover, title, player ---------- */
+/* ---------- side: title, player ---------- */
 .side {
   display: flex;
   flex-direction: column;
   gap: 22px;
-}
-.cover {
-  display: block;
-  width: 100%;
-  max-width: 400px;
-  height: auto;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 6px;
-  background: var(--line);
 }
 .head { display: flex; flex-direction: column; gap: 6px; }
 h1 {
@@ -235,7 +221,6 @@ html:not(.js) .player { display: none; }
 <div class="screen">
 <main class="page">
   <section class="side" aria-label="Трек">
-    <img class="cover" src="cover.jpg" width="360" height="360" alt="Монитор с пустым белым экраном и курсором на деревянном столе, рядом кружка и обрывки бумаги, утренний свет из окна">
     <div class="head">
       <h1>Представил</h1>
       <p class="sub">Ещё одна песня про твой топ-1</p>
@@ -686,8 +671,7 @@ html:not(.js) .player { display: none; }
   if ('mediaSession' in navigator && window.MediaMetadata) {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: 'Представил',
-      artist: 'gormonn',
-      artwork: [{ src: new URL('cover.jpg', location.href).href, sizes: '360x360', type: 'image/jpeg' }]
+      artist: 'gormonn'
     });
     var ms = navigator.mediaSession;
     try {
