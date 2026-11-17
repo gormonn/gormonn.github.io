@@ -212,6 +212,22 @@ html:not(.js) .player { display: none; }
   text-underline-offset: 5px;
 }
 
+/* link to the other song */
+.more { margin-top: 3em; padding-top: 1.4em; border-top: 1px solid var(--line); }
+.more-label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 0.9rem; }
+.more a {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--wood);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+@media (hover: hover) { .more a:hover { color: var(--wood-text); } }
+.more a:focus-visible { outline: 3px solid var(--wood); outline-offset: 4px; border-radius: 2px; }
+
 @media (prefers-reduced-motion: reduce) {
   .lyrics .w { transition: none; }
 }
@@ -310,6 +326,11 @@ html:not(.js) .player { display: none; }
       <span class="sr-only">Аутро.</span>
       <p class="quiet" data-s="155.13" data-e="156.08"><span class="adlib"><span class="w" data-t="155.13">(Красиво.)</span></span></p>
     </div>
+
+    <nav class="more" aria-label="Другие песни">
+      <span class="more-label">Ещё песня</span>
+      <a href="../nataly/">Четыреста дней и&nbsp;одна&nbsp;ночь</a>
+    </nav>
   </article>
 </main>
 </div>

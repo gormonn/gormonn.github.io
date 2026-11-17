@@ -226,6 +226,22 @@ html:not(.js) .player { display: none; }
 .lyrics.karaoke .adlib .w.sung { color: var(--cardboard); }
 .lyrics.karaoke .w.cur { color: var(--cardboard); }
 
+/* link to the other song */
+.more { margin-top: 3em; padding-top: 1.4em; border-top: 1px solid var(--line); }
+.more-label { display: block; margin-bottom: 6px; color: var(--dim); font-size: 0.9rem; }
+.more a {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--paper);
+  text-decoration: underline;
+  text-decoration-color: var(--cardboard);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+@media (hover: hover) { .more a:hover { color: var(--cardboard); } }
+.more a:focus-visible { outline: 3px solid var(--screen); outline-offset: 4px; border-radius: 2px; }
+
 @media (prefers-reduced-motion: reduce) {
   .night { transition: none; }
   .lyrics .w { transition: none; }
@@ -342,6 +358,11 @@ html:not(.js) .player { display: none; }
     <div class="stanza">
       <p class="outro" data-s="210.54" data-e="211.30"><span class="w" data-t="210.54">Ну</span> <span class="w" data-t="210.76">ты</span> <span class="w" data-t="210.89">даёшь.</span></p>
     </div>
+
+    <nav class="more" aria-label="Другие песни">
+      <span class="more-label">Ещё песня</span>
+      <a href="../predstavil/">Представил твою улыбку</a>
+    </nav>
   </article>
 </main>
 
