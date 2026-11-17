@@ -198,8 +198,6 @@ html:not(.js) .player { display: none; }
   color: var(--muted);
   margin: 0 0 28px;
 }
-.lyrics .hint { color: var(--muted); font-size: 0.85rem; margin: -18px 0 28px; }
-html:not(.js) .lyrics .hint { display: none; }
 @media (max-width: 420px) {
   .lyrics { font-size: 16px; }
   .chorus { padding-left: 13px; }
@@ -216,7 +214,6 @@ html:not(.js) .lyrics .hint { display: none; }
 .chorus .quiet { font-weight: 500; }
 
 /* timed lyrics: grey until sung, the current word underlined like a pen stroke */
-.js .lyrics p[data-s] { cursor: pointer; }
 .lyrics .w { transition: color 0.2s ease; }
 .lyrics.karaoke p,
 .lyrics.karaoke .w { color: var(--unsung); }
@@ -275,7 +272,6 @@ html:not(.js) .lyrics .hint { display: none; }
 
 <article class="lyrics" id="lyrics">
     <h2>Текст</h2>
-    <p class="hint">Нажми на строку, чтобы послушать с неё.</p>
 
     <div class="stanza">
       <span class="sr-only">Куплет 1.</span>
@@ -409,9 +405,7 @@ html:not(.js) .lyrics .hint { display: none; }
   });
   var LEAD = 0.06; // light a word a hair early so it never feels late
   var HOLD = 1.2;  // a line stays current this long after its last word
-  var sung = 0, curWord = -1, curLine = -1, lastLine = -1, karaoke = false;
-  var lastUserScroll = 0;
-  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sung = 0, curWord = -1, curLine = -1, karaoke = false;
 
   function countUpTo(arr, t) { // how many items start at or before t
     var lo = 0, hi = arr.length;
@@ -420,20 +414,6 @@ html:not(.js) .lyrics .hint { display: none; }
       if (arr[mid].t <= t) lo = mid + 1; else hi = mid;
     }
     return lo;
-  }
-  function isVisible(el) {
-    var r = el.getBoundingClientRect();
-    return r.bottom > 0 && r.top < window.innerHeight;
-  }
-  function follow(li) {
-    // scroll along only while the reader is looking at the lyrics and not scrolling by hand
-    if (lastLine < 0 || Date.now() - lastUserScroll < 4000) return;
-    if (!isVisible(lines[lastLine].el)) return;
-    var r = lines[li].el.getBoundingClientRect();
-    var vh = window.innerHeight;
-    if (r.top < vh * 0.2 || r.bottom > vh * 0.65) {
-      lines[li].el.scrollIntoView({ block: 'center', behavior: reducedMotion ? 'auto' : 'smooth' });
-    }
   }
   function renderLyrics(t) {
     if (!karaoke) {
@@ -455,11 +435,7 @@ html:not(.js) .lyrics .hint { display: none; }
     }
     if (li !== curLine) {
       if (curLine >= 0) lines[curLine].el.classList.remove('cur');
-      if (li >= 0) {
-        lines[li].el.classList.add('cur');
-        follow(li);
-        lastLine = li;
-      }
+      if (li >= 0) lines[li].el.classList.add('cur');
       curLine = li;
     }
     var cw = li >= 0 ? k - 1 : -1;
@@ -469,9 +445,6 @@ html:not(.js) .lyrics .hint { display: none; }
       curWord = cw;
     }
   }
-  ['wheel', 'touchmove', 'keydown'].forEach(function (ev) {
-    window.addEventListener(ev, function () { lastUserScroll = Date.now(); }, { passive: true });
-  });
 
   /* ---------- choosing the fastest source ---------- */
   var chosen = null;
@@ -655,15 +628,6 @@ html:not(.js) .lyrics .hint { display: none; }
 
   document.addEventListener('keydown', function (e) {
     if (e.key === ' ' && e.target === document.body) { e.preventDefault(); toggle(); }
-  });
-
-  /* tap a lyric line to play from it */
-  lyricsEl.addEventListener('click', function (e) {
-    var p = e.target.closest ? e.target.closest('p[data-s]') : null;
-    if (!p) return;
-    if (window.getSelection && String(window.getSelection())) return; // selecting text, not seeking
-    seekTo(Math.max(0, parseFloat(p.getAttribute('data-s')) - 0.4));
-    if (audio.paused || audio.ended) toggle();
   });
 
   /* ---------- download from the fastest source, with progress ---------- */
