@@ -226,6 +226,17 @@ html:not(.js) .player { display: none; }
 .lyrics.karaoke .adlib .w.sung { color: var(--cardboard); }
 .lyrics.karaoke .w.cur { color: var(--cardboard); }
 
+/* lines that are sung but no longer signed: struck through and never lit */
+.lyrics p.struck {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--cardboard);
+}
+.lyrics p.struck .w,
+.lyrics.karaoke p.struck .w,
+.lyrics.karaoke p.struck .w.sung,
+.lyrics.karaoke p.struck .w.cur { color: #7a8599; }
+
 /* link to the other song */
 .more { margin-top: 3em; padding-top: 1.4em; border-top: 1px solid var(--line); }
 .more-label { display: block; margin-bottom: 6px; color: var(--dim); font-size: 0.9rem; }
@@ -342,8 +353,8 @@ html:not(.js) .player { display: none; }
       <p data-s="157.93" data-e="160.76"><span class="w" data-t="157.93">Ты</span> <span class="w" data-t="158.04">спала&nbsp;—</span> <span class="w" data-t="159.26">а</span> <span class="w" data-t="159.34">верхняя</span> <span class="w" data-t="159.88">строка</span> <span class="w" data-t="160.35">твоя.</span></p>
       <p data-s="162.57" data-e="165.14"><span class="w" data-t="162.57">Черепашьим</span> <span class="w" data-t="163.32">шагом&nbsp;—</span> <span class="w" data-t="164.37">выше</span> <span class="w" data-t="164.72">всех.</span></p>
       <p data-s="166.97" data-e="170.07"><span class="w" data-t="166.97">Утром&nbsp;—</span> <span class="w" data-t="167.88">улыбка.</span> <span class="w" data-t="168.38">Отлегло.</span> <span class="w" data-t="169.08">Тихо,</span> <span class="w" data-t="169.51">про</span> <span class="w" data-t="169.75">себя.</span></p>
-      <p data-s="171.36" data-e="174.45"><span class="w" data-t="171.36">Как</span> <span class="w" data-t="171.52">у</span> <span class="w" data-t="171.67">тебя</span> <span class="w" data-t="171.90">выходит&nbsp;—</span> <span class="w" data-t="173.94">не</span> <span class="w" data-t="174.07">знаю.</span></p>
-      <p data-s="175.67" data-e="178.89"><span class="w" data-t="175.67">Знаю</span> <span class="w" data-t="176.22">одно:</span> <span class="w" data-t="177.83">я</span> <span class="w" data-t="178.05">бы</span> <span class="w" data-t="178.16">так</span> <span class="w" data-t="178.38">не</span> <span class="w" data-t="178.47">смог.</span></p>
+      <p class="struck" data-s="171.36" data-e="174.45"><span class="sr-only">Зачёркнуто: </span><span class="w" data-t="171.36">Как</span> <span class="w" data-t="171.52">у</span> <span class="w" data-t="171.67">тебя</span> <span class="w" data-t="171.90">выходит&nbsp;—</span> <span class="w" data-t="173.94">не</span> <span class="w" data-t="174.07">знаю.</span></p>
+      <p class="struck" data-s="175.67" data-e="178.89"><span class="sr-only">Зачёркнуто: </span><span class="w" data-t="175.67">Знаю</span> <span class="w" data-t="176.22">одно:</span> <span class="w" data-t="177.83">я</span> <span class="w" data-t="178.05">бы</span> <span class="w" data-t="178.16">так</span> <span class="w" data-t="178.38">не</span> <span class="w" data-t="178.47">смог.</span></p>
     </div>
 
     <div class="stanza chorus">
@@ -352,7 +363,7 @@ html:not(.js) .player { display: none; }
       <p data-s="186.43" data-e="190.16"><span class="w" data-t="186.43">Всё,</span> <span class="w" data-t="186.72">что</span> <span class="w" data-t="187.00">копила,&nbsp;—</span> <span class="w" data-t="187.52">в</span> <span class="w" data-t="187.62">бой,</span> <span class="w" data-t="188.26">без</span> <span class="w" data-t="188.38">резерва!</span> <span class="adlib"><span class="w" data-t="189.60">(В</span> <span class="w" data-t="189.77">бой!)</span></span></p>
       <p data-s="190.62" data-e="194.41"><span class="w" data-t="190.62">Четыреста</span> <span class="w" data-t="191.63">дней&nbsp;—</span> <span class="w" data-t="192.77">и</span> <span class="w" data-t="193.19">одна</span> <span class="w" data-t="193.73">ночь!</span></p>
       <p data-s="194.97" data-e="202.88"><span class="w" data-t="194.97">Легла,</span> <span class="w" data-t="195.44">как</span> <span class="w" data-t="195.56">всегда.</span> <span class="w" data-t="196.03">Проснулась&nbsp;—</span> <span class="w" data-t="197.39">первой.</span> <span class="adlib"><span class="w" data-t="201.73">(Номер</span> <span class="w" data-t="202.47">один!)</span></span></p>
-      <p class="quiet" data-s="205.78" data-e="207.54"><span class="w" data-t="205.78">И</span> <span class="w" data-t="206.21">никому</span> <span class="w" data-t="206.81">ни</span> <span class="w" data-t="206.96">слова.</span></p>
+      <p class="quiet struck" data-s="205.78" data-e="207.54"><span class="sr-only">Зачёркнуто: </span><span class="w" data-t="205.78">И</span> <span class="w" data-t="206.21">никому</span> <span class="w" data-t="206.81">ни</span> <span class="w" data-t="206.96">слова.</span></p>
     </div>
 
     <div class="stanza">
