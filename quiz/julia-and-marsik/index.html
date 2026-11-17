@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Песня про вас с Марсиком</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* layout: one question per screen; a cat walks along the progress track toward its bowl */
+  --bg: #f7f1ea;
+  --surface: #ffffff;
+  --ink: #2a211c;
+  --muted: #6f6158;
+  --line: #e6dacd;
+  --accent: #b5532a;
+  --accent-soft: #f6e3d8;
+  --on-accent: #ffffff;
+  --amber: #9a6a0c;
+  --amber-soft: #fbf0d6;
+  --font-display: "Comfortaa", "Trebuchet MS", sans-serif;
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1a1512;
+    --surface: #241d19;
+    --ink: #f2e9e2;
+    --muted: #b3a398;
+    --line: #3d322b;
+    --accent: #f08a5d;
+    --accent-soft: #43281c;
+    --on-accent: #1a1512;
+    --amber: #f0bd4f;
+    --amber-soft: #3a2f14;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1a1512;
+  --surface: #241d19;
+  --ink: #f2e9e2;
+  --muted: #b3a398;
+  --line: #3d322b;
+  --accent: #f08a5d;
+  --accent-soft: #43281c;
+  --on-accent: #1a1512;
+  --amber: #f0bd4f;
+  --amber-soft: #3a2f14;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.progress-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.path {
+  position: relative;
+  height: 34px;
+  margin-right: 30px;
+}
+.track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+.fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.cat {
+  position: absolute;
+  bottom: 8px;
+  width: 34px;
+  height: 24px;
+  transform: translateX(-50%);
+  color: var(--ink);
+  transition: left 0.3s ease;
+}
+.bowl {
+  position: absolute;
+  right: -30px;
+  bottom: 2px;
+  width: 26px;
+  height: 16px;
+  color: var(--accent);
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin: 0;
+  text-wrap: balance;
+  line-height: 1.35;
+}
+h1 { font-size: 1.35rem; }
+h2 { font-size: 1.12rem; }
+p { margin: 0; }
+.muted { color: var(--muted); font-size: 0.92rem; }
+.hint { color: var(--muted); font-size: 0.82rem; }
+.warn {
+  background: var(--amber-soft);
+  border: 1.5px solid var(--amber);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.92rem;
+}
+.hero-cat {
+  width: 72px;
+  height: 50px;
+  color: var(--accent);
+}
+.options {
+  display: grid;
+  gap: 10px;
+}
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 54px;
+  padding: 12px 14px;
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+@media (hover: hover) { .opt:hover { border-color: var(--accent); } }
+.opt[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.letter {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.opt[aria-pressed="true"] .letter {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.opt-re { border-style: dashed; }
+.opt-re .letter { background: var(--amber-soft); color: var(--amber); }
+@media (hover: hover) { .opt-re:hover { border-color: var(--amber); } }
+.opt-re[aria-pressed="true"] { border-color: var(--amber); border-style: solid; background: var(--amber-soft); }
+.opt-re[aria-pressed="true"] .letter { background: var(--amber); color: var(--on-accent); }
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field label {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+input[type="text"], textarea {
+  width: 100%;
+  font: inherit;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+}
+textarea { resize: vertical; min-height: 96px; }
+input[type="text"]:focus, textarea:focus { border-color: var(--accent); outline: none; }
+.nav {
+  display: flex;
+  gap: 12px;
+}
+.btn {
+  font: inherit;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  min-height: 52px;
+}
+.btn-primary {
+  flex: 1;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.btn:focus-visible, .opt:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 2px;
+}
+.summary {
+  min-height: 260px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.status {
+  font-size: 0.9rem;
+  color: var(--accent);
+  min-height: 1.4em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fill, .opt, .cat { transition: none; }
+}
+</style>
+</head>
+<body>
+<main class="wrap" id="app">
+  <section class="card">
+    <h1>Песня про вас с Марсиком</h1>
+    <p>Привет! Хочу написать песню про вас с Марсиком, и мне интересно, как всё это выглядит твоими глазами.</p>
+  </section>
+</main>
+
+<script>
+(function () {
+  var LETTERS = ["А", "Б", "В", "Г", "Д"];
+  var KEY = "marsik-anketa-v1";
+  var CAT_SVG = '<svg viewBox="0 0 40 28" fill="currentColor" aria-hidden="true">' +
+    '<path d="M7 15 Q1 9 4 3" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>' +
+    '<ellipse cx="17" cy="16" rx="11" ry="6.5"/>' +
+    '<circle cx="30" cy="11" r="6"/>' +
+    '<polygon points="25.4,7.5 26.4,0.6 30.2,5"/>' +
+    '<polygon points="29.8,5 34,0.6 34.6,7.5"/>' +
+    '<rect x="8.5" y="19" width="3" height="8.5" rx="1.5"/>' +
+    '<rect x="13.5" y="19" width="3" height="8.5" rx="1.5"/>' +
+    '<rect x="20.5" y="19" width="3" height="8.5" rx="1.5"/>' +
+    '<rect x="25" y="19" width="3" height="8.5" rx="1.5"/>' +
+    '</svg>';
+  var BOWL_SVG = '<svg viewBox="0 0 28 16" fill="currentColor" aria-hidden="true">' +
+    '<circle cx="9" cy="5" r="2.4"/><circle cx="14" cy="4" r="2.6"/><circle cx="19" cy="5" r="2.4"/>' +
+    '<path d="M1 7 H27 A13 8.5 0 0 1 1 7 Z"/>' +
+    '</svg>';
+
+  var Q = [
+    { t: "Кто для тебя Марсик?",
+      o: ["Член семьи", "Друг", "Малыш", "Сосед по квартире", "Начальник"] },
+    { t: "Помнишь фото Марсика в коробке с нарисованными ножничками? Какой была твоя реакция?",
+      o: ["Рассмеялась", "Удивилась", "Пожалела Марсика", "Захотела ответить", "Не помню"] },
+    { t: "Когда Марсик идёт к миске через твой стол, между тобой и монитором, что ты делаешь?",
+      o: ["Смеюсь", "Глажу его", "Разговариваю с ним", "Жду, пока пройдёт", "Ворчу"] },
+    { t: "Ночной тыгыдык. Какой он для тебя?",
+      o: ["Смешной", "Привычный", "Милый", "Мешает спать", "Сплю и не слышу"] },
+    { t: "Что ты чувствуешь, когда он мурчит и зарывается тебе в волосы?",
+      o: ["Нежность", "Спокойствие", "Тепло", "Щекотно", "Не задумывалась"] },
+    { t: "Как Марсик даёт тебе понять, чего хочет?",
+      o: ["Мяукает", "Смотрит", "Ходит следом", "Трогает лапой", "Садится рядом"] },
+    { t: "Какое из дел для Марсика тебе ближе всего?",
+      o: ["Строить домики и когтеточки", "Играть с ним", "Кормить и поить", "Убирать лоток", "Всё одинаково"] },
+    { t: "Ласкаться Марсик приходит только к тебе. Как ты к этому относишься?",
+      o: ["Горжусь", "Мне приятно", "Мне смешно", "Чувствую ответственность", "Не задумывалась"] },
+    { t: "Как проходят дни, когда вы с Марсиком не вместе?",
+      o: ["Скучаю", "Думаю, как он там", "Жду встречи", "Спокойно", "Не задумывалась"] },
+    { t: "Как ты зовёшь Марсика, кроме «Марсик»?", free: true,
+      ph: "Все прозвища, какие есть" },
+    { t: "Какую фразу ты чаще всего говоришь Марсику?", free: true,
+      ph: "Одна-две фразы, как есть" },
+    { t: "Что Марсик делает, когда я не вижу?", free: true,
+      ph: "Любая его привычка или случай" }
+  ];
+
+  var state = { step: -1, savedStep: -1, ans: Q.map(function () { return { sel: [], own: "" }; }) };
+  var storageOk = (function () {
+    try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); return true; } catch (e) { return false; }
+  })();
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (saved && Array.isArray(saved.ans) && saved.ans.length === Q.length) {
+      state.ans = saved.ans;
+      if (typeof saved.step === "number" && saved.step >= 0 && saved.step <= Q.length) {
+        state.savedStep = saved.step;
+      }
+    }
+  } catch (e) {}
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify({ ans: state.ans, step: state.step })); } catch (e) {}
+  }
+
+  var app = document.getElementById("app");
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function answered(i) {
+    var a = state.ans[i];
+    return a.sel.length > 0 || a.own.trim() !== "" || !!a.re;
+  }
+
+  function header(i) {
+    var pct = Math.round(((i + 1) / Q.length) * 100);
+    var prog = el("div", "progress");
+    prog.appendChild(el("div", "progress-label", "Вопрос " + (i + 1) + " из " + Q.length));
+    var path = el("div", "path");
+    var track = el("div", "track");
+    var fill = el("div", "fill");
+    fill.style.width = pct + "%";
+    track.appendChild(fill);
+    var cat = el("div", "cat");
+    cat.innerHTML = CAT_SVG;
+    cat.style.left = "calc(" + pct + "% - " + (pct === 100 ? 17 : 0) + "px)";
+    var bowl = el("div", "bowl");
+    bowl.innerHTML = BOWL_SVG;
+    path.appendChild(track);
+    path.appendChild(cat);
+    path.appendChild(bowl);
+    prog.appendChild(path);
+    return prog;
+  }
+
+  function go(step) {
+    state.step = step;
+    state.savedStep = step;
+    save();
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  function renderQuestion(i) {
+    var q = Q[i];
+    var a = state.ans[i];
+    app.appendChild(header(i));
+
+    var card = el("section", "card");
+    var h = el("h2", null, q.t);
+    h.id = "q-title";
+    card.appendChild(h);
+
+    var nextBtn = el("button", "btn btn-primary");
+    nextBtn.type = "button";
+    function updateNext() {
+      var last = i === Q.length - 1;
+      nextBtn.textContent = answered(i) ? (last ? "Готово" : "Дальше") : "Пропустить";
+    }
+
+    var reBtn = el("button", "opt opt-re");
+    reBtn.type = "button";
+    reBtn.id = "q" + i + "-re";
+    reBtn.setAttribute("aria-pressed", a.re ? "true" : "false");
+    reBtn.appendChild(el("span", "letter", "?"));
+    reBtn.appendChild(el("span", null, "Переформулируй вопрос"));
+    var optButtons = [];
+    reBtn.addEventListener("click", function () {
+      a.re = !a.re;
+      reBtn.setAttribute("aria-pressed", a.re ? "true" : "false");
+      if (a.re) {
+        a.sel = [];
+        optButtons.forEach(function (ob) { ob.setAttribute("aria-pressed", "false"); });
+      }
+      save();
+      updateNext();
+    });
+
+    if (!q.free) {
+      card.appendChild(el("p", "muted", "Можно несколько"));
+      var opts = el("div", "options");
+      opts.setAttribute("role", "group");
+      opts.setAttribute("aria-labelledby", "q-title");
+      q.o.forEach(function (text, k) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.id = "q" + i + "-o" + k;
+        b.setAttribute("aria-pressed", a.sel.indexOf(k) !== -1 ? "true" : "false");
+        b.appendChild(el("span", "letter", LETTERS[k]));
+        b.appendChild(el("span", null, text));
+        b.addEventListener("click", function () {
+          var pos = a.sel.indexOf(k);
+          if (pos === -1) a.sel.push(k); else a.sel.splice(pos, 1);
+          a.sel.sort();
+          b.setAttribute("aria-pressed", pos === -1 ? "true" : "false");
+          if (a.re) { a.re = false; reBtn.setAttribute("aria-pressed", "false"); }
+          save();
+          updateNext();
+        });
+        optButtons.push(b);
+        opts.appendChild(b);
+      });
+      opts.appendChild(reBtn);
+      card.appendChild(opts);
+    }
+
+    var field = el("div", "field");
+    var lab = el("label", null, q.free ? "Твой ответ" : "Или своими словами");
+    lab.setAttribute("for", "own-" + i);
+    var input = q.free ? el("textarea") : el("input");
+    if (!q.free) input.type = "text";
+    input.id = "own-" + i;
+    input.value = a.own;
+    if (q.ph) input.placeholder = q.ph;
+    input.addEventListener("input", function () {
+      a.own = input.value;
+      save();
+      updateNext();
+    });
+    field.appendChild(lab);
+    field.appendChild(input);
+    field.appendChild(el("p", "hint", "Удобнее голосом? Нажми на поле, потом на микрофон на клавиатуре телефона."));
+    card.appendChild(field);
+    if (q.free) card.appendChild(reBtn);
+
+    var nav = el("div", "nav");
+    var back = el("button", "btn btn-ghost", "Назад");
+    back.type = "button";
+    back.addEventListener("click", function () { go(i - 1); });
+    nextBtn.addEventListener("click", function () { go(i + 1); });
+    updateNext();
+    nav.appendChild(back);
+    nav.appendChild(nextBtn);
+    card.appendChild(nav);
+    app.appendChild(card);
+  }
+
+  function buildSummary() {
+    var lines = ["Ответы Юли для песни про Марсика", ""];
+    Q.forEach(function (q, i) {
+      var a = state.ans[i];
+      var parts = [];
+      if (a.re) parts.push("просит переформулировать вопрос");
+      a.sel.forEach(function (k) { parts.push(LETTERS[k] + ") " + q.o[k]); });
+      if (a.own.trim()) parts.push((q.free ? "" : "своё: ") + a.own.trim());
+      lines.push((i + 1) + ". " + q.t);
+      lines.push("   " + (parts.length ? parts.join("; ") : "пропущено"));
+    });
+    return lines.join("\n");
+  }
+
+  function renderFinal() {
+    var card = el("section", "card");
+    var hero = el("div", "hero-cat");
+    hero.innerHTML = CAT_SVG;
+    card.appendChild(hero);
+    card.appendChild(el("h1", null, "Готово. Спасибо!"));
+    card.appendChild(el("p", null, "Скопируй, пожалуйста, ответы и пришли мне. Из них получится песня."));
+
+    var field = el("div", "field");
+    var lab = el("label", null, "Твои ответы");
+    lab.setAttribute("for", "summary");
+    var ta = el("textarea", "summary");
+    ta.id = "summary";
+    ta.readOnly = true;
+    ta.value = buildSummary();
+    field.appendChild(lab);
+    field.appendChild(ta);
+    card.appendChild(field);
+
+    var status = el("p", "status");
+    status.setAttribute("role", "status");
+
+    var copy = el("button", "btn btn-primary", "Скопировать ответы");
+    copy.type = "button";
+    copy.addEventListener("click", function () {
+      function fallback() {
+        ta.focus();
+        ta.select();
+        status.textContent = "Не получилось скопировать само. Текст выделен: нажми на него и удерживай, чтобы скопировать.";
+      }
+      try {
+        navigator.clipboard.writeText(ta.value).then(function () {
+          status.textContent = "Скопировано. Теперь вставь в сообщение мне.";
+        }, fallback);
+      } catch (e) { fallback(); }
+    });
+
+    var edit = el("button", "btn btn-ghost", "Изменить ответы");
+    edit.type = "button";
+    edit.addEventListener("click", function () { go(0); });
+
+    var nav = el("div", "nav");
+    nav.appendChild(edit);
+    nav.appendChild(copy);
+    card.appendChild(nav);
+    card.appendChild(status);
+    app.appendChild(card);
+  }
+
+  function renderIntro() {
+    var card = el("section", "card");
+    var hero = el("div", "hero-cat");
+    hero.innerHTML = CAT_SVG;
+    card.appendChild(hero);
+    card.appendChild(el("h1", null, "Песня про вас с Марсиком"));
+    card.appendChild(el("p", null, "Привет! Хочу написать песню про вас с Марсиком, и мне интересно, как всё это выглядит твоими глазами. Правильных ответов здесь нет: можно выбрать то, что первым откликнется, несколько вариантов сразу или написать своими словами."));
+    card.appendChild(el("p", "muted", Q.length + " вопросов, около четырёх минут."));
+    if (!storageOk) {
+      var warn = el("p", "warn", "Этот браузер не сохраняет ответы (так бывает в приватном режиме). Если закрыть страницу, ответы пропадут. Лучше пройти анкету за один раз или открыть ссылку в обычной вкладке.");
+      warn.setAttribute("role", "note");
+      card.appendChild(warn);
+    }
+    if (storageOk) card.appendChild(el("p", "muted", "Ответы сохраняются на этом устройстве. Можно прерваться в любой момент и вернуться по той же ссылке: продолжишь с того места, где остановилась."));
+    var nav = el("div", "nav");
+    var resume = state.savedStep >= 0;
+    var start = el("button", "btn btn-primary", resume ? "Продолжить" : "Начать");
+    start.type = "button";
+    start.addEventListener("click", function () { go(resume ? state.savedStep : 0); });
+    nav.appendChild(start);
+    card.appendChild(nav);
+    app.appendChild(card);
+  }
+
+  function render() {
+    app.textContent = "";
+    if (state.step < 0) renderIntro();
+    else if (state.step < Q.length) renderQuestion(state.step);
+    else renderFinal();
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
