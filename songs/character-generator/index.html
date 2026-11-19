@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,'Segoe UI',sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Анкета песни</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,500;0,7..72,650;1,7..72,500&display=swap">
+<style>
+/* Layout: анкета слева, живой бриф справа в липкой колонке; на узком экране бриф идёт под анкетой */
+:root{
+  --paper:#eef0f5; --sheet:#fbfcfe; --ink:#1b2033; --muted:#596079; --line:#d5d9e5; --line-strong:#b6bccf;
+  --accent:#3140a6; --accent-ink:#ffffff; --accent-soft:#e3e6f8;
+  --tension:#8f5400; --tension-soft:#fbeed6;
+  --clash:#b3302a; --clash-soft:#fae1de;
+  --ok:#2b7448; --ok-soft:#ddefe4;
+  --font-display:"Literata", Georgia, "Times New Roman", serif;
+  --font-body:"Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#11131a; --sheet:#181b25; --ink:#e5e8f1; --muted:#9aa1b7; --line:#2a2f3e; --line-strong:#40465b;
+    --accent:#a3adff; --accent-ink:#11131a; --accent-soft:#252b4a;
+    --tension:#f2b45a; --tension-soft:#36280f;
+    --clash:#ff8379; --clash-soft:#3b1c1a;
+    --ok:#77d39c; --ok-soft:#16301f;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#11131a; --sheet:#181b25; --ink:#e5e8f1; --muted:#9aa1b7; --line:#2a2f3e; --line-strong:#40465b;
+  --accent:#a3adff; --accent-ink:#11131a; --accent-soft:#252b4a;
+  --tension:#f2b45a; --tension-soft:#36280f;
+  --clash:#ff8379; --clash-soft:#3b1c1a;
+  --ok:#77d39c; --ok-soft:#16301f;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1280px;margin:0 auto;padding-block:28px 72px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* шапка */
+.head{display:grid;gap:12px;margin-bottom:24px;max-width:820px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.title-input{font-family:var(--font-display);font-weight:650;font-size:clamp(30px,5vw,46px);line-height:1.1;border:0;border-bottom:2px dashed var(--line-strong);background:transparent;padding:2px 0 6px;width:100%;min-width:0}
+.title-input::placeholder{color:var(--muted);opacity:.7}
+.title-input:focus{outline:none;border-bottom-color:var(--accent)}
+.lede{color:var(--muted);max-width:64ch}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.example{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--accent-soft);color:var(--ink);border-radius:10px;padding:10px 14px;font-size:14px}
+
+/* кнопки */
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong);background:var(--sheet);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:14px;font-weight:500}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn-link{border:0;background:none;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer;font-size:inherit}
+
+/* раскладка */
+.layout{display:grid;gap:24px;align-items:start}
+@media (min-width:980px){
+  .layout{grid-template-columns:minmax(0,1.4fr) minmax(340px,1fr)}
+  .aside{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 16px);max-height:calc(100vh - 32px - env(safe-area-inset-top, 0px));overflow:auto}
+}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:14px;min-width:0}
+
+/* анкета */
+.block{padding:22px 22px 26px;display:grid;gap:16px}
+.block + .block{border-top:1px solid var(--line)}
+.block h2{font-family:var(--font-display);font-weight:650;font-size:22px}
+.block .note{color:var(--muted);font-size:14px;max-width:66ch;margin-top:-8px}
+.group{display:grid;gap:10px}
+.group h3{font-family:var(--font-mono);font-weight:500;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px 16px}
+.field{display:grid;gap:4px;min-width:0}
+.field label{font-size:13px;font-weight:500}
+.ctrl{display:flex;gap:6px;min-width:0}
+.ctrl select,.ctrl input{flex:1;min-width:0;width:100%;border:1px solid var(--line-strong);border-radius:8px;background:var(--sheet);padding:8px 10px;font-size:14px}
+.field.filled select,.field.filled input{border-color:var(--accent);background:var(--accent-soft)}
+.dice{flex:none;width:36px;border:1px solid var(--line-strong);border-radius:8px;background:var(--sheet);display:grid;place-items:center;cursor:pointer;color:var(--muted)}
+.dice:hover{color:var(--accent);border-color:var(--accent)}
+.dice svg{width:16px;height:16px}
+.hint{font-size:12.5px;color:var(--muted);min-height:1.3em}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.chip span{display:inline-block;border:1px solid var(--line-strong);border-radius:999px;padding:5px 12px;font-size:13.5px}
+.chip input:checked + span{background:var(--clash-soft);border-color:var(--clash);color:var(--ink)}
+.chip input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+
+/* миксер */
+.mixer{display:grid;gap:10px}
+.channel{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(120px,170px);gap:10px 12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.channel .num{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.channel select{width:100%;min-width:0;border:1px solid var(--line-strong);border-radius:8px;background:var(--sheet);padding:7px 9px;font-size:14px}
+.fader{display:grid;gap:2px}
+.fader input{width:100%;accent-color:var(--accent)}
+.fader output{font-family:var(--font-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.channel .spec{grid-column:2 / -1;font-family:var(--font-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+@media (max-width:560px){ .channel{grid-template-columns:24px minmax(0,1fr)} .fader{grid-column:2} }
+textarea{width:100%;min-height:110px;border:1px solid var(--line-strong);border-radius:10px;background:var(--sheet);padding:10px 12px;font-size:15px;line-height:1.5;resize:vertical}
+
+/* бриф справа */
+.aside .part{padding:18px 20px;display:grid;gap:12px}
+.aside .part + .part{border-top:1px solid var(--line)}
+.aside h2{font-family:var(--font-mono);font-weight:500;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;gap:8px;align-items:baseline}
+.count{font-variant-numeric:tabular-nums;color:var(--ink)}
+.items{display:grid;gap:12px;margin:0;padding:0;list-style:none}
+.item{display:grid;gap:4px}
+.item p{font-size:14px}
+.item .q{font-family:var(--font-display);font-style:italic;font-size:15px}
+.pill{justify-self:start;font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:2px 8px}
+.pill.tension{background:var(--tension-soft);color:var(--tension)}
+.pill.clash{background:var(--clash-soft);color:var(--clash)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.empty{font-size:14px;color:var(--muted)}
+.meters{display:grid;gap:10px}
+.meter{display:grid;gap:4px}
+.meter .row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.meter .track{position:relative;height:6px;border-radius:3px;background:var(--line)}
+.meter .dot{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid var(--sheet);transform:translate(-50%,-50%)}
+.mixline{font-size:14px}
+.tempo{font-family:var(--font-mono);font-size:13px;font-variant-numeric:tabular-nums}
+pre.brief{margin:0;font-family:var(--font-mono);font-size:12.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word;background:var(--paper);border-radius:10px;padding:12px 14px;max-height:340px;overflow:auto}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.status{font-size:13px;color:var(--muted)}
+.gate{font-size:13.5px;background:var(--tension-soft);border-radius:8px;padding:8px 12px}
+.check{display:flex;gap:8px;align-items:center;font-size:13.5px}
+.mine{border-left:0;background:var(--paper);border-radius:10px;padding:10px 14px;font-size:14px}
+.mine b{font-family:var(--font-mono);font-weight:500;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+.md{display:grid;gap:8px;font-size:14.5px}
+.md h4{margin:6px 0 0;font-family:var(--font-display);font-size:16px;font-weight:650}
+.md ul,.md ol{margin:0;padding-left:20px;display:grid;gap:4px}
+.saved{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.saved li{display:flex;gap:8px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:14px}
+.saved .meta{color:var(--muted);font-family:var(--font-mono);font-size:12px;font-variant-numeric:tabular-nums}
+.saved .acts{display:flex;gap:10px;flex:none}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);border-radius:10px;padding:10px 14px;font-size:14px;display:flex;gap:12px;align-items:center;max-width:calc(100% - 32px);z-index:20}
+.toast button{background:none;border:0;color:var(--paper);text-decoration:underline;cursor:pointer;padding:0}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important;scroll-behavior:auto!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <p class="eyebrow">Анкета песни</p>
+    <label class="eyebrow" for="f-title" style="letter-spacing:.06em">Рабочее название</label>
+    <input id="f-title" class="title-input" type="text" placeholder="Как называется песня" autocomplete="off">
+    <p class="lede">Черты героя, место, голос и звук. Справа собирается бриф. Черты, которые тянут героя в разные стороны, подсвечены как столкновения: из них растёт песня. Жанры, которые спорят друг с другом, подсвечены как конфликты.</p>
+    <div class="toolbar">
+      <button type="button" class="btn" id="b-random">Заполнить пустые случайно</button>
+      <button type="button" class="btn" id="b-clear">Очистить анкету</button>
+    </div>
+    <p class="example" id="example" hidden>Открыт пример: песня про лесника в тайге. Меняй любые поля или очисти анкету.</p>
+  </header>
+
+  <div class="layout">
+    <form class="sheet" id="form" autocomplete="off"></form>
+
+    <aside class="sheet aside" aria-label="Бриф">
+      <section class="part" id="p-tension">
+        <h2>Столкновения <span class="count" id="t-count"></span></h2>
+        <ul class="items" id="t-list"></ul>
+      </section>
+      <section class="part" id="p-sound">
+        <h2>Звук и чувство</h2>
+        <div id="s-body"></div>
+        <ul class="items" id="s-list"></ul>
+      </section>
+      <section class="part" id="p-brief">
+        <h2>Бриф</h2>
+        <pre class="brief" id="brief"></pre>
+        <div class="actions">
+          <button type="button" class="btn" id="b-copy">Скопировать бриф</button>
+        </div>
+        <p class="status" id="offline" hidden>Вариант Claude и сохранение работают, когда страница открыта в claude.ai. Здесь бриф можно скопировать и вставить в чат.</p>
+      </section>
+      <section class="part" id="p-claude" hidden>
+        <h2>Вариант Claude</h2>
+        <p class="gate" id="gate" hidden>Сначала свой набросок: пара фраз в последнем разделе анкеты. Потом сравнишь его с вариантом Claude. <button type="button" class="btn-link" id="b-to-sketch">К наброску</button></p>
+        <label class="check"><input type="checkbox" id="f-skip"> Без наброска</label>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="b-expand">Развернуть с Claude</button>
+          <button type="button" class="btn" id="b-again" hidden>Другой вариант</button>
+          <button type="button" class="btn" id="b-stop" hidden>Остановить</button>
+        </div>
+        <p class="status" id="c-status"></p>
+        <div class="mine" id="c-mine" hidden><b>Твой набросок</b><span id="c-mine-text"></span></div>
+        <div class="md" id="c-out"></div>
+      </section>
+      <section class="part" id="p-save" hidden>
+        <h2>Для Claude</h2>
+        <p class="status">Сохранённую анкету Claude прочитает сам: напиши в чате «посмотри анкету» и название.</p>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="b-save">Сохранить анкету</button>
+          <span class="status" id="save-status"></span>
+        </div>
+        <ul class="saved" id="saved"></ul>
+      </section>
+    </aside>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden><span id="toast-text"></span><button type="button" id="toast-act" hidden></button></div>
+
+<script>
+/* ---------- данные ---------- */
+const AX = {
+  soc:   {plus:'к людям', minus:'к одиночеству', q:'С кем он говорит, когда рядом никого?'},
+  ord:   {plus:'к порядку и правилам', minus:'к свободе', q:'Какое правило он нарушит в песне и чего это ему будет стоить?'},
+  faith: {plus:'к вере', minus:'к сомнению', q:'К кому он обращается, когда обратиться не к кому?'},
+  risk:  {plus:'к риску', minus:'к осторожности', q:'Что случится в тот день, когда он не побоится?'},
+  warm:  {plus:'к открытым чувствам', minus:'к закрытости', q:'Что он чувствует, но вслух не скажет никогда?'},
+  past:  {plus:'в прошлое', minus:'в будущее', q:'Что из прошлого он держит в руках, буквально?'},
+};
+function T(s){const o={};(s||'').split(/\s+/).filter(Boolean).forEach(p=>{const m=p.match(/^([a-z]+)([+-]\d)$/);if(m)o[m[1]]=+m[2];});return o;}
+function opts(list){return list.map(x=>typeof x==='string'?{v:x,h:'',t:{}}:{v:x[0],h:x[1]||'',t:T(x[2])});}
+
+const PLACES=[['Тайга','глушь, сотни километров без дорог'],['Тундра, Крайний Север','полярная ночь, ветер, вахтовые посёлки'],['Горы','перевалы, метеостанции, обвалы'],['Степь','горизонт со всех сторон, ветер'],['Море, побережье','порт, рыбацкий посёлок, маяк'],['Остров','отрезан водой, паром раз в неделю'],['Деревня','все друг друга знают'],['Моногород','один завод на всех'],['Мегаполис','шум, метро, никто никого не знает'],['Спальный район','панельки, дворы, гаражи'],['Трасса','фуры, придорожные кафе, ночь за рулём'],['Вахта, промысел','месяц там, месяц дома'],'Война, фронт','Больница','Тюрьма, зона',['Поезд, вокзал','всё время в пути'],'Монастырь',['Эмиграция','чужая страна, чужой язык'],'Космическая станция','Вымышленный мир'];
+const ERAS=['Вне времени','Царская Россия','1920–30-е','Война 1941–45','Оттепель, 1960-е','Застой, 1970–80-е','Перестройка','1990-е','2000-е','2010-е','Сейчас','Ближнее будущее','Далёкое будущее'];
+const SEASONS=['Зима',['Весна, распутица','дороги нет, всё течёт'],'Лето','Осень','Полярная ночь','Белые ночи','Межсезонье'];
+const HOURS=['Рассвет','День','Сумерки','Ночь',['Четыре утра','бессонница, самый тёмный час']];
+const PEOPLE=[['Один на сотни км','ближайший человек — по рации','soc-2'],['Вдвоём','он и ещё кто-то, кого не выбирал','soc-1'],'Семья',['Маленькая община','десяток человек, все на виду','soc+1'],'Посёлок',['Толпа большого города','','soc+1'],['Одиночество в толпе','люди рядом, а поговорить не с кем','soc-1']];
+const GENDERS=['Мужчина','Женщина','Не важно'];
+const AGES=['Ребёнок, 8–12','Подросток','20–30','30–45','45–60','60–75','Старик или старуха, 75+'];
+const SOCIAL=['Из бедной семьи','Рабочий','Интеллигенция',['Разбогател сам','','risk+1'],['Разорился','','past+1'],['Маргинал','','ord-1'],['Элита','','ord+1']];
+const TEMPERS=[['Холерик','быстро вспыхивает, быстро остывает','risk+1 warm+1'],['Сангвиник','лёгкий, общительный, переключается','soc+1 warm+1'],['Флегматик','медленный, устойчивый, не суетится','ord+1 risk-1'],['Меланхолик','глубоко чувствует, долго помнит','soc-1 past+1']];
+const ENNEA=[['1 · Реформатор','боится быть плохим; всё должно быть правильно','ord+2'],['2 · Помощник','боится быть ненужным; живёт для других','soc+1 warm+1'],['3 · Достигатор','боится быть никем; живёт результатом','risk+1 past-1'],['4 · Индивидуалист','боится не иметь своего лица; тоскует по недостающему','warm+1 past+1 soc-1'],['5 · Наблюдатель','боится беспомощности; копит знание, держит дистанцию','soc-2 warm-1'],['6 · Лоялист','боится остаться без опоры; ищет, кому верить','ord+1 risk-1 faith+1'],['7 · Энтузиаст','боится боли; убегает в новое и весёлое','soc+2 risk+1 past-1'],['8 · Боец','боится чужой власти над собой; защищает своих','risk+2 warm-1 ord-1'],['9 · Миротворец','боится конфликта; растворяется в других','risk-2']];
+const ATTACH=[['Надёжная','умеет быть близко и отдельно'],['Тревожная','цепляется, боится, что бросят','soc+1 warm+1'],['Избегающая','уходит, когда становится близко','soc-1 warm-2'],['Дезорганизованная','тянется и отталкивает одновременно','soc+1 warm-1']];
+const VIEWS=[['Традиционалист','как деды жили, так и правильно','ord+1 past+1'],['Государственник','без порядка всё развалится','ord+2'],['Либерал','каждый решает за себя','ord-1'],['Анархист','никто ему не начальник','ord-2 risk+1'],['Левый по убеждению','за справедливость и общее','soc+1'],['За землю, а не за государство','родина — это место, а не власть','past+1 ord-1'],['Аполитичный','моё дело сторона','risk-1'],['Циник','все врут, и я тоже','faith-2 warm-1'],['Идеалист','мир можно исправить','faith+1 risk+1']];
+const FAITHS=[['Воцерковлённый православный','пост, исповедь, правило','faith+2 ord+1'],['Бытовое православие','крестик, Пасха, свечка на всякий случай','faith+1'],['Старообрядец','вера отцов, свои книги, отдельность','faith+2 ord+2 past+2'],['Ислам','','faith+2 ord+1'],['Буддизм','','faith+1 risk-1'],['Протестант','Библия своими глазами','faith+2'],['Вера в духов места','лес, река и огонь живые','faith+1 past+1'],['Ищущий','примеряет веры на себя','faith-1 risk+1'],['Обиженный на Бога','верит, но не простил','faith-1 warm+1'],['Утративший веру','верил, пока не случилось','faith-1 past+1'],['Агностик','не знаю и не берусь','faith-1'],['Убеждённый атеист','есть только то, что можно потрогать','faith-2']];
+const ZODIAC=[['Овен','напор, первым лезет в драку','risk+1'],['Телец','упрям, держится за своё и привычное','ord+1 risk-1'],['Близнецы','болтлив, двойственен','soc+1'],['Рак','держится за дом и прошлое','past+1 warm+1'],['Лев','хочет, чтобы его видели','soc+1 warm+1'],['Дева','всё по полочкам','ord+1'],['Весы','ищет равновесия, не решается','risk-1 soc+1'],['Скорпион','скрытный, глубокий, мстительный','warm-1 risk+1'],['Стрелец','рвётся за горизонт','risk+1 ord-1'],['Козерог','терпение, долг, сдержанность','ord+1 warm-1'],['Водолей','сам по себе, против правил','ord-1 soc-1'],['Рыбы','мечтатель, верит в знаки','faith+1 warm+1']];
+const WOUNDS=[['Смерть близкого','','past+1'],['Предательство','','warm-1'],['Ушла или ушёл','','past+1'],['Война','','past+1 warm-1'],['Тюрьма','','past+1'],'Разорение',['Вынужденный переезд','','past+1'],['Болезнь','','risk-1'],['Не стал тем, кем мечтал','','past+1'],['Виноват в чужой беде','','past+1 warm-1'],['Дом без любви в детстве','','warm-1'],['Раны нет, жизнь ровная','тогда где трещина?']];
+const WANTS=[['Чтобы оставили в покое','','soc-2'],['Вернуть того, кто ушёл','','past+1'],['Доказать','кому-то или себе','risk+1'],['Сохранить своё','дом, участок, порядок','ord+1'],['Уехать','','past-1 risk+1'],['Разбогатеть','','risk+1'],['Отомстить','','warm-1 risk+1'],['Найти своих','','soc+1'],['Дожить спокойно','','risk-1'],['Сделать что-то настоящее','','risk+1']];
+const NEEDS=[['Простить другого','','past-1 warm+1'],['Простить себя','','past-1'],['Пустить людей','','soc+1 warm+1'],['Принять помощь','','warm+1'],['Отпустить прошлое','','past-2'],['Сказать правду','','warm+1 risk+1'],['Перестать бежать','','risk-1'],['Поверить','','faith+1'],['Рискнуть','','risk+1'],['Научиться просить','','warm+1 soc+1']];
+const FEARS=[['Одиночества','','soc+1'],['Людей','','soc-1'],'Старости','Смерти',['Бедности','','risk-1'],['Быть ненужным','','soc+1'],['Перемен','','risk-1 past+1'],['Своей злости','','warm-1'],'Сойти с ума',['Что его забудут','','past+1']];
+const SECRETS=[['Ждёт ответа, которого не будет','','past+1'],'Есть ребёнок, о котором никто не знает',['Сделал что-то страшное','','past+1 warm-1'],['Пишет стихи','','warm+1'],['Давно болен и молчит','','warm-1'],'Был не тем, кем кажется',['Любит того, кого нельзя','','warm+1'],['Готовится уйти','','past-1'],'Тайны нет'];
+const SPEECH=[['Молчун','','soc-1 warm-1'],['Балагур','','soc+1'],'Матерится по делу',['Книжно, правильно','','ord+1'],['Говорит с животными и вещами','людям не говорит, а им говорит','soc-1 warm+1'],['Шутит, когда больно','','warm-1'],['Коротко, приказами','','ord+1'],'Сбивчиво, не договаривает',['Поёт вместо слов','','warm+1']];
+const VICES=[['Пьёт','','past+1'],['Вспыльчив','','risk+1'],['Упрям','','ord+1'],'Врёт себе','Жадный',['Ревнивый','','warm+1'],['Трусоват','','risk-1'],['Гордыня','','warm-1'],'Ленив',['Святая простота','','faith+1']];
+const WHOSE=['Сам герой, от первого лица','Наблюдатель со стороны',['Близкий героя','жена, сын, друг'],'Тот, кого он потерял',['Место говорит','лес, город, море'],'Зверь или вещь рядом с ним','Хор, «мы»','Автор говорит герою «ты»'];
+const ADDRESS=['К себе','К любимой или любимому','К умершему','К Богу','К ребёнку','К матери или отцу','К врагу','К месту','К слушателю',['В пустоту','в эфир, в дневник']];
+const WHEN=['Сейчас, в эту минуту','Воспоминание','Письмо, которое не отправят','Последний день','Сон','Через много лет'];
+const HONEST=['Говорит как есть','Обманывает себя','Недоговаривает главное','Хвастается, а за этим боль','Шутит о страшном'];
+const FEELS=[
+  {v:'Светлая грусть',lo:.15,hi:.5,val:.45},{v:'Тоска',lo:.1,hi:.45,val:.2},{v:'Нежность',lo:.1,hi:.45,val:.65},
+  {v:'Надежда',lo:.3,hi:.75,val:.7},{v:'Катарсис',h:'слёзы, а за ними облегчение',lo:.4,hi:.95,val:.5},{v:'Ярость',lo:.65,hi:1,val:.2},
+  {v:'Тревога',lo:.35,hi:.8,val:.2},{v:'Ностальгия',lo:.15,hi:.55,val:.5},{v:'Восторг, подъём',lo:.6,hi:1,val:.85},
+  {v:'Покой',lo:0,hi:.3,val:.6},{v:'Одиночество, которое греет',lo:.1,hi:.45,val:.45},{v:'Гордость',lo:.45,hi:.9,val:.7},
+  {v:'Узнавание: «это про меня»',lo:.2,hi:.65,val:.4},{v:'Смех сквозь слёзы',lo:.35,hi:.75,val:.55},{v:'Жуть',lo:.2,hi:.7,val:.1},
+].map(x=>({h:'',t:{},...x}));
+const DYNS=[{v:'Шёпот от начала до конца',lo:0,hi:.3},{v:'Ровно'},{v:'Медленное нарастание'},{v:'Тихий куплет, взрыв в припеве'},{v:'Волнами'},{v:'Взрыв с первой секунды',lo:.65,hi:1},{v:'Затухание к концу'}].map(x=>({h:'',t:{},...x}));
+const AFTER=['Позвонить близкому','Помолчать','Сразу переслушать','Выйти на воздух','Танцевать','Плакать','Что-то изменить в жизни','Обнять кого-то'];
+const AVOID=['Пафос','Нытьё','Мораль в конце','Штампы','Иллюстрация в лоб','Слащавость','Чернуха ради чернухи'];
+const JOBS=['лесник','егерь','охотник-промысловик','рыбак','дальнобойщик','учитель','врач','военный','музыкант','программист','бывший спортсмен','священник','продавщица','шахтёр','вахтовик','художник','пенсионер'];
+/* жанр: [имя, BPM от, BPM до, энергия 0..1, настроение 0 темно..1 светло, фактура, подача, пояснение] */
+const GENRES=[
+  ['Авторская песня',70,110,.3,.45,'ac','sung'],['Городской романс',60,100,.3,.35,'ac','sung'],['Русский рок',80,140,.65,.4,'band','sung'],
+  ['Пост-панк',120,160,.65,.25,'band','sung'],['Панк-рок',150,200,.9,.55,'band','shout'],['Хард-рок',100,150,.85,.5,'band','shout'],
+  ['Дум-метал',50,75,.7,.1,'band','shout'],['Шугейз',90,130,.6,.35,'band','soft'],['Инди-фолк',80,125,.4,.5,'ac','soft'],
+  ['Фолк-рок',90,140,.6,.6,'band','sung'],['Северное этно',60,110,.45,.35,'ac','chant','варган, бубен, горловое пение'],['Кантри, американа',80,130,.5,.6,'ac','sung'],
+  ['Блюз',60,120,.45,.3,'band','sung'],['Госпел',70,130,.7,.8,'band','choir'],['Соул, R&B',60,100,.45,.55,'band','sung'],
+  ['Джазовая баллада',55,85,.25,.4,'ac','soft'],['Босса-нова',110,140,.3,.6,'ac','soft'],['Реггей',60,90,.45,.7,'band','sung'],
+  ['Поп-баллада',60,85,.45,.5,'mix','sung'],['Синти-поп',110,130,.6,.6,'el','sung'],['Дрим-поп',70,110,.35,.5,'mix','soft'],
+  ['Трип-хоп',70,95,.35,.25,'el','soft'],['Хип-хоп, бум-бэп',85,98,.55,.45,'el','spoken'],['Трэп',130,160,.7,.35,'el','spoken'],
+  ['Фонк',130,150,.75,.3,'el','spoken'],['Лоу-фай',70,90,.2,.5,'el','none'],['Хаус',118,128,.7,.7,'el','sung'],
+  ['Техно',125,145,.85,.4,'el','none'],['Гиперпоп',140,180,.9,.7,'el','sung'],['Эмбиент',50,90,.1,.5,'el','none'],
+  ['Дарк-эмбиент',40,80,.2,.1,'el','none'],['Неоклассика, фортепиано',50,100,.2,.4,'orch','none'],['Оркестровый саундтрек',60,120,.6,.45,'orch','choir'],
+  ['Электро-фолк',100,125,.6,.5,'mix','sung'],
+].map(g=>({name:g[0],lo:g[1],hi:g[2],en:g[3],val:g[4],tex:g[5],voc:g[6],h:g[7]||''}));
+const SPICE=15;
+
+const SECTIONS=[
+  {id:'anchors',title:'Место и время',note:'Якоря. Их решают до всего остального, иначе черты героя живут в разных мирах.',groups:[{fields:[
+    {id:'place',label:'Место',options:opts(PLACES)},
+    {id:'region',label:'Где именно',type:'text',ph:'например, Саяны, кордон в верховьях'},
+    {id:'era',label:'Эпоха',options:opts(ERAS)},
+    {id:'season',label:'Сезон',options:opts(SEASONS)},
+    {id:'hour',label:'Час песни',options:opts(HOURS)},
+    {id:'people',label:'Люди вокруг',options:opts(PEOPLE)},
+  ]}]},
+  {id:'hero',title:'Герой',note:'Всё, что лепит характер. Черты с противоположной тягой справа подсвечены как столкновения: это материал, а не ошибка.',groups:[
+    {title:'Кто он',fields:[{id:'gender',label:'Пол',options:opts(GENDERS)},{id:'age',label:'Возраст',options:opts(AGES)},{id:'job',label:'Чем занят',type:'text',ph:'лесник, обход 40 км',list:JOBS},{id:'social',label:'Откуда он',options:opts(SOCIAL)}]},
+    {title:'Психика',fields:[{id:'temper',label:'Темперамент',options:opts(TEMPERS)},{id:'ennea',label:'Психотип, эннеаграмма',options:opts(ENNEA)},{id:'attach',label:'Привязанность',options:opts(ATTACH)}]},
+    {title:'Убеждения',fields:[{id:'views',label:'Взгляды',options:opts(VIEWS)},{id:'faith',label:'Вера',options:opts(FAITHS)},{id:'zodiac',label:'Знак зодиака',options:opts(ZODIAC)}]},
+    {title:'История',fields:[{id:'wound',label:'Рана',options:opts(WOUNDS)},{id:'want',label:'Хочет',options:opts(WANTS)},{id:'need',label:'На самом деле нужно',options:opts(NEEDS)},{id:'fear',label:'Боится',options:opts(FEARS)},{id:'secret',label:'Тайна',options:opts(SECRETS)}]},
+    {title:'Привычки',fields:[{id:'speech',label:'Как говорит',options:opts(SPEECH)},{id:'vice',label:'Слабость',options:opts(VICES)},{id:'ritual',label:'Ритуал',type:'text',ph:'каждый вечер выходит на связь'},{id:'object',label:'Предмет при нём',type:'text',ph:'рация с отколотой ручкой'}]},
+  ]},
+  {id:'voice',title:'Голос песни',note:'Кто говорит, кому и когда.',groups:[{fields:[
+    {id:'whose',label:'Чей голос',options:opts(WHOSE)},{id:'address',label:'К кому обращается',options:opts(ADDRESS)},
+    {id:'when',label:'Когда звучит рассказ',options:opts(WHEN)},{id:'honest',label:'Честность рассказчика',options:opts(HONEST)},
+  ]}]},
+  {id:'listener',title:'Слушатель',note:'Что должно остаться у человека, который дослушал до конца.',groups:[{fields:[
+    {id:'feel',label:'Главное чувство',options:FEELS},{id:'arcFrom',label:'Дуга: из',options:FEELS},{id:'arcTo',label:'Дуга: в',options:FEELS},
+    {id:'dyn',label:'Динамика',options:DYNS},{id:'after',label:'После песни хочется',options:opts(AFTER)},
+  ]},{title:'Чего в песне быть не должно',chips:AVOID}]},
+  {id:'sound',title:'Миксер жанров',note:`До трёх жанров с долей. Каналы тише ${SPICE} % в конфликтах не участвуют: это специи.`,mixer:true},
+  {id:'sketch',title:'Твой набросок',note:'Сначала сам: кто этот человек, одной-тремя фразами, своими словами. Потом сравнишь с вариантом Claude.',sketch:true},
+];
+const FIELDS={};
+SECTIONS.forEach(s=>(s.groups||[]).forEach(g=>(g.fields||[]).forEach(f=>FIELDS[f.id]=f)));
+
+const EXAMPLE={title:'Лесник',f:{place:'Тайга',region:'Саяны, кордон в верховьях',era:'Сейчас',season:'Зима',hour:'Ночь',people:'Один на сотни км',gender:'Мужчина',age:'45–60',job:'лесник, обход 40 км',social:'Рабочий',temper:'Флегматик',ennea:'7 · Энтузиаст',attach:'Тревожная',views:'За землю, а не за государство',faith:'Обиженный на Бога',zodiac:'Рак',wound:'Ушла или ушёл',want:'Чтобы оставили в покое',need:'Пустить людей',fear:'Быть ненужным',secret:'Ждёт ответа, которого не будет',speech:'Говорит с животными и вещами',vice:'Врёт себе',ritual:'каждый вечер выходит на связь по рации',object:'рация с отколотой ручкой',whose:'Сам герой, от первого лица',address:'В пустоту',when:'Сейчас, в эту минуту',honest:'Шутит о страшном',feel:'Одиночество, которое греет',arcFrom:'Тоска',arcTo:'Светлая грусть',dyn:'Медленное нарастание',after:'Позвонить близкому'},avoid:['Пафос','Штампы'],mix:[{g:'Авторская песня',w:50},{g:'Северное этно',w:30},{g:'Трип-хоп',w:20}],sketch:'',skip:false,example:true};
+
+/* ---------- состояние ---------- */
+const DRAFT_KEY='song-brief-draft-v1';
+function blank(){return {title:'',f:{},avoid:[],mix:[{g:'',w:50},{g:'',w:30},{g:'',w:20}],sketch:'',skip:false,example:false};}
+function clone(x){return JSON.parse(JSON.stringify(x));}
+let state=clone(EXAMPLE);
+try{const d=localStorage.getItem(DRAFT_KEY);if(d){const p=JSON.parse(d);if(p&&p.f)state={...blank(),...p};}}catch(e){}
+
+/* ---------- утилиты ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+function h(tag,attrs,...kids){const el=document.createElement(tag);for(const [k,v] of Object.entries(attrs||{})){if(v==null||v===false)continue;if(k==='class')el.className=v;else if(k==='text')el.textContent=v;else if(k.startsWith('on'))el.addEventListener(k.slice(2),v);else el.setAttribute(k,v===true?'':v);}for(const k of kids.flat()){if(k==null||k===false)continue;el.append(k.nodeType?k:document.createTextNode(String(k)));}return el;}
+const DICE='<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="1.5" width="13" height="13" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="5.2" cy="5.2" r="1.25" fill="currentColor"/><circle cx="8" cy="8" r="1.25" fill="currentColor"/><circle cx="10.8" cy="10.8" r="1.25" fill="currentColor"/></svg>';
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function fmt(n){return n.toFixed(2).replace('.',',');}
+function val(id){return (state.f[id]||'').trim();}
+function optOf(id){const fd=FIELDS[id];const v=val(id);return fd&&fd.options?fd.options.find(o=>o.v===v):null;}
+let toastTimer;
+function toast(text,action){const t=$('#toast');$('#toast-text').textContent=text;const b=$('#toast-act');if(action){b.hidden=false;b.textContent=action.label;b.onclick=()=>{action.run();t.hidden=true;};}else{b.hidden=true;b.onclick=null;}t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true;},action?9000:3500);}
+
+/* ---------- построение анкеты ---------- */
+function fieldEl(fd){
+  const id='f-'+fd.id;
+  const wrap=h('div',{class:'field','data-field':fd.id});
+  wrap.append(h('label',{for:id,text:fd.label}));
+  const row=h('div',{class:'ctrl'});
+  let input;
+  if(fd.type==='text'){
+    input=h('input',{id,type:'text',placeholder:fd.ph||'',autocomplete:'off',list:fd.list?id+'-list':null});
+    row.append(input);
+    if(fd.list){const dl=h('datalist',{id:id+'-list'});fd.list.forEach(x=>dl.append(h('option',{value:x})));wrap.append(dl);}
+    input.addEventListener('input',onInput);
+  }else{
+    input=h('select',{id});
+    input.append(h('option',{value:'',text:'— не задано —'}));
+    fd.options.forEach(o=>input.append(h('option',{value:o.v,text:o.v})));
+    const dice=h('button',{type:'button',class:'dice','aria-label':'Случайно: '+fd.label,title:'Случайно'});
+    dice.innerHTML=DICE;
+    dice.addEventListener('click',()=>{const o=pick(fd.options.filter(x=>x.v!==input.value));input.value=o.v;onInput();});
+    row.append(input,dice);
+    input.addEventListener('change',onInput);
+  }
+  wrap.append(row);
+  if(fd.type!=='text')wrap.append(h('p',{class:'hint',id:'h-'+fd.id}));
+  return wrap;
+}
+function buildForm(){
+  const form=$('#form');
+  form.addEventListener('submit',e=>e.preventDefault());
+  for(const s of SECTIONS){
+    const sec=h('section',{class:'block',id:'sec-'+s.id},h('h2',{text:s.title}),h('p',{class:'note',text:s.note}));
+    (s.groups||[]).forEach(g=>{
+      const grp=h('div',{class:'group'});
+      if(g.title)grp.append(h('h3',{text:g.title}));
+      if(g.fields){const grid=h('div',{class:'grid'});g.fields.forEach(f=>grid.append(fieldEl(f)));grp.append(grid);}
+      if(g.chips){const c=h('div',{class:'chips',role:'group','aria-label':g.title});g.chips.forEach((x,i)=>{const cid='f-avoid-'+i;const lab=h('label',{class:'chip',for:cid},h('input',{type:'checkbox',id:cid,value:x}),h('span',{text:x}));lab.querySelector('input').addEventListener('change',onInput);c.append(lab);});grp.append(c);}
+      sec.append(grp);
+    });
+    if(s.mixer){
+      const mx=h('div',{class:'mixer'});
+      for(let i=0;i<3;i++){
+        const sel=h('select',{id:'mix-g-'+i,'aria-label':'Жанр, канал '+(i+1)});
+        sel.append(h('option',{value:'',text:'— канал пуст —'}));
+        GENRES.forEach(g=>sel.append(h('option',{value:g.name,text:g.name})));
+        sel.addEventListener('change',onInput);
+        const rng=h('input',{type:'range',id:'mix-w-'+i,min:'0',max:'100',step:'5','aria-label':'Доля, канал '+(i+1)});
+        rng.addEventListener('input',onInput);
+        mx.append(h('div',{class:'channel'},h('span',{class:'num',text:String(i+1).padStart(2,'0')}),sel,h('div',{class:'fader'},rng,h('output',{id:'mix-o-'+i,for:'mix-w-'+i})),h('p',{class:'spec',id:'mix-s-'+i})));
+      }
+      sec.append(mx);
+    }
+    if(s.sketch){
+      const ta=h('textarea',{id:'f-sketch',placeholder:'Кто он, одной-тремя фразами. Своими словами.'});
+      ta.addEventListener('input',onInput);
+      sec.append(ta);
+    }
+    form.append(sec);
+  }
+}
+
+/* ---------- синхронизация формы и состояния ---------- */
+function readForm(){
+  state.title=$('#f-title').value;
+  for(const id of Object.keys(FIELDS)){const el=$('#f-'+id);if(el)state.f[id]=el.value;}
+  state.avoid=[...document.querySelectorAll('.chip input:checked')].map(x=>x.value);
+  state.mix=[0,1,2].map(i=>({g:$('#mix-g-'+i).value,w:+$('#mix-w-'+i).value}));
+  state.sketch=$('#f-sketch').value;
+  state.skip=$('#f-skip').checked;
+}
+function writeForm(){
+  $('#f-title').value=state.title||'';
+  for(const id of Object.keys(FIELDS)){const el=$('#f-'+id);if(el)el.value=state.f[id]||'';}
+  document.querySelectorAll('.chip input').forEach(x=>x.checked=(state.avoid||[]).includes(x.value));
+  (state.mix||[]).forEach((c,i)=>{$('#mix-g-'+i).value=c.g||'';$('#mix-w-'+i).value=c.w??0;});
+  $('#f-sketch').value=state.sketch||'';
+  $('#f-skip').checked=!!state.skip;
+}
+let draftTimer;
+function onInput(){readForm();state.example=false;render();clearTimeout(draftTimer);draftTimer=setTimeout(saveDraft,400);}
+function saveDraft(){try{localStorage.setItem(DRAFT_KEY,JSON.stringify(state));}catch(e){}}
+
+/* ---------- столкновения черт ---------- */
+function tensions(){
+  const pulls={};
+  for(const fd of Object.values(FIELDS)){
+    if(!fd.options)continue;
+    const o=optOf(fd.id);if(!o)continue;
+    for(const [ax,n] of Object.entries(o.t||{})){(pulls[ax]||(pulls[ax]={plus:[],minus:[]}))[n>0?'plus':'minus'].push({fd,o,n:Math.abs(n)});}
+  }
+  const out=[];
+  for(const [ax,p] of Object.entries(pulls)){
+    if(!p.plus.length||!p.minus.length)continue;
+    const a=[...p.plus].sort((x,y)=>y.n-x.n)[0],b=[...p.minus].sort((x,y)=>y.n-x.n)[0];
+    out.push({ax,a,b,w:a.n+b.n});
+  }
+  return out.sort((x,y)=>y.w-x.w);
+}
+function tensionText(t){const A=AX[t.ax];return `«${t.a.o.v}» (${t.a.fd.label.toLowerCase()}) тянет ${A.plus}, а «${t.b.o.v}» (${t.b.fd.label.toLowerCase()}) — ${A.minus}.`;}
+function heroFilled(){return ['temper','ennea','attach','views','faith','zodiac','wound','want','need','fear','secret','speech','vice'].filter(id=>val(id)).length;}
+
+/* ---------- звук ---------- */
+function overlap(a1,a2,b1,b2){return Math.max(a1,b1)<=Math.min(a2,b2);}
+function sound(){
+  const ch=(state.mix||[]).map(c=>({...c,G:GENRES.find(g=>g.name===c.g)})).filter(c=>c.G&&c.w>0);
+  const total=ch.reduce((a,c)=>a+c.w,0);
+  if(!total)return null;
+  ch.forEach(c=>c.pct=Math.round(c.w/total*100));
+  const en=ch.reduce((a,c)=>a+c.G.en*c.w,0)/total, vl=ch.reduce((a,c)=>a+c.G.val*c.w,0)/total;
+  const loud=ch.filter(c=>c.pct>=SPICE);
+  const lo=Math.max(...loud.map(c=>c.G.lo)),hi=Math.min(...loud.map(c=>c.G.hi));
+  const lead=[...ch].sort((a,b)=>b.w-a.w)[0];
+  const tempo=lo<=hi?{lo,hi,common:true}:{lo:lead.G.lo,hi:lead.G.hi,common:false,lead:lead.G.name};
+  const issues=[];
+  for(let i=0;i<loud.length;i++)for(let j=i+1;j<loud.length;j++){
+    const A=loud[i].G,B=loud[j].G;
+    if(!overlap(A.lo,A.hi,B.lo,B.hi)){
+      const [slow,fast]=A.hi<B.lo?[A,B]:[B,A];
+      if(overlap(slow.lo,slow.hi,fast.lo/2,fast.hi/2)){
+        const a=Math.round(Math.max(slow.lo,fast.lo/2)),b=Math.round(Math.min(slow.hi,fast.hi/2));
+        issues.push({sev:'tension',text:`Темп: «${slow.name}» ${slow.lo}–${slow.hi} и «${fast.name}» ${fast.lo}–${fast.hi} BPM сходятся только в половинном счёте. Быстрый жанр звучит вдвое медленнее, около ${a}–${b} BPM.`});
+      }else issues.push({sev:'clash',text:`Темп: «${slow.name}» ${slow.lo}–${slow.hi} и «${fast.name}» ${fast.lo}–${fast.hi} BPM не сходятся даже в половинном счёте. Одному жанру придётся уступить.`});
+    }
+    if(Math.abs(A.en-B.en)>=.5)issues.push({sev:'tension',text:`Энергия: «${A.name}» ${fmt(A.en)} и «${B.name}» ${fmt(B.en)}. Разведи по частям: спокойный куплет, громкий припев.`});
+    if(Math.abs(A.val-B.val)>=.45){const [d,l]=A.val<B.val?[A,B]:[B,A];issues.push({sev:'tension',text:`Настроение: «${d.name}» темнее, «${l.name}» светлее. Контраст работает, если текст его держит.`});}
+    if((A.tex==='ac'&&B.tex==='el')||(A.tex==='el'&&B.tex==='ac')){const [ac,el]=A.tex==='ac'?[A,B]:[B,A];issues.push({sev:'tension',text:`Фактура: акустика «${ac.name}» и электроника «${el.name}» сами не склеятся. Нужен мост: общий инструмент или общая обработка.`});}
+    if((A.voc==='shout'&&B.voc==='soft')||(A.voc==='soft'&&B.voc==='shout')){const [sh,so]=A.voc==='shout'?[A,B]:[B,A];issues.push({sev:'clash',text:`Подача: крик «${sh.name}» и шёпот «${so.name}» в одной фразе не живут. Раздели их по частям или выбери одно.`});}
+  }
+  return {ch,en,val:vl,tempo,issues};
+}
+function listenerIssues(snd){
+  const out=[];
+  const feel=FEELS.find(x=>x.v===val('feel'));
+  if(feel&&snd){
+    if(snd.en<feel.lo-.08||snd.en>feel.hi+.08){const d=snd.en<feel.lo?feel.lo-snd.en:snd.en-feel.hi;out.push({sev:d>.25?'clash':'tension',text:`Чувство «${feel.v}» просит энергию ${fmt(feel.lo)}–${fmt(feel.hi)}, а микс даёт ${fmt(snd.en)}. ${snd.en>feel.hi?'Убавь громкие жанры':'Добавь напора'} или смени чувство.`});}
+    if(Math.abs(snd.val-feel.val)>=.4)out.push({sev:'tension',text:`Музыка ${snd.val>feel.val?'светлее':'темнее'} чувства «${feel.v}». Контраст сработает, если он задуман.`});
+  }
+  const dyn=DYNS.find(x=>x.v===val('dyn'));
+  if(dyn&&dyn.lo!=null&&snd&&(snd.en<dyn.lo-.08||snd.en>dyn.hi+.08))out.push({sev:'clash',text:`Динамика «${dyn.v}» не сходится с энергией микса ${fmt(snd.en)}.`});
+  if(val('arcFrom')&&val('arcFrom')===val('arcTo'))out.push({sev:'tension',text:`Дуга стоит на месте: из «${val('arcFrom')}» в «${val('arcTo')}». Если это не замысел, песне нужен сдвиг.`});
+  return out;
+}
+
+/* ---------- бриф ---------- */
+function kv(id,withHint){const v=val(id);if(!v)return null;const o=optOf(id);return FIELDS[id].label.toLowerCase()+' — '+v+(withHint&&o&&o.h?` (${o.h})`:'');}
+function line(label,parts){const p=parts.filter(Boolean);return p.length?label+': '+p.join('; '):null;}
+function briefText(tens,snd,lis){
+  const L=['АНКЕТА ПЕСНИ'+(state.title.trim()?` «${state.title.trim()}»`:'')];
+  const sec=(name,rows)=>{const r=rows.filter(Boolean);if(r.length)L.push('',name,...r);};
+  sec('МЕСТО И ВРЕМЯ',[
+    (val('place')||val('region'))?'Место: '+[val('place'),val('region')&&`(${val('region')})`].filter(Boolean).join(' '):null,
+    line('Время',[val('era'),val('season'),val('hour')]),
+    val('people')&&'Люди вокруг: '+val('people'),
+  ]);
+  sec('ГЕРОЙ',[
+    line('Кто',[val('gender'),val('age'),val('job'),val('social')]),
+    line('Психика',[kv('temper',1),kv('ennea',1),kv('attach',1)]),
+    line('Убеждения',[kv('views'),kv('faith'),kv('zodiac')]),
+    line('История',[kv('wound'),kv('want'),kv('need'),kv('fear'),kv('secret')]),
+    line('Привычки',[kv('speech'),kv('vice'),kv('ritual'),kv('object')]),
+  ]);
+  sec('СТОЛКНОВЕНИЯ',tens.map(t=>'- '+tensionText(t)+' Вопрос: '+AX[t.ax].q));
+  sec('ГОЛОС',[kv('whose'),kv('address'),kv('when'),kv('honest')].map(x=>x&&x[0].toUpperCase()+x.slice(1)));
+  sec('СЛУШАТЕЛЬ',[
+    val('feel')&&'Главное чувство: '+val('feel'),
+    (val('arcFrom')||val('arcTo'))&&`Дуга: из «${val('arcFrom')||'?'}» в «${val('arcTo')||'?'}»`,
+    val('dyn')&&'Динамика: '+val('dyn'),
+    val('after')&&'После песни хочется: '+val('after').toLowerCase(),
+    state.avoid.length&&'Нельзя: '+state.avoid.join(', ').toLowerCase(),
+  ]);
+  if(snd)sec('ЗВУК',[
+    snd.ch.map(c=>`${c.G.name} ${c.pct} %`).join(' + '),
+    (snd.tempo.common?`Темп: ${snd.tempo.lo}–${snd.tempo.hi} BPM`:`Темп: общего нет, ведёт «${snd.tempo.lead}», ${snd.tempo.lo}–${snd.tempo.hi} BPM`)+` · энергия ${fmt(snd.en)} · настроение ${fmt(snd.val)} (0 — темно, 1 — светло)`,
+    ...[...snd.issues,...lis].map(x=>`- ${x.sev==='clash'?'Конфликт':'Контраст'}: ${x.text}`),
+  ]);
+  else if(lis.length)sec('ЗВУК',lis.map(x=>`- ${x.text}`));
+  if(state.sketch.trim())sec('НАБРОСОК АВТОРА',[state.sketch.trim()]);
+  return L.join('\n');
+}
+
+/* ---------- отрисовка правой колонки ---------- */
+function issueItem(x){return h('li',{class:'item'},h('span',{class:'pill '+x.sev,text:x.sev==='clash'?'конфликт':x.sev==='ok'?'совместимо':'контраст'}),h('p',{text:x.text}));}
+function meter(label,left,right,v){return h('div',{class:'meter'},h('div',{class:'row'},h('span',{text:label}),h('span',{text:fmt(v)})),h('div',{class:'track'},h('span',{class:'dot',style:`left:${Math.round(v*100)}%`})),h('div',{class:'row'},h('span',{text:left}),h('span',{text:right})));}
+let lastBrief='';
+function render(){
+  $('#example').hidden=!state.example;
+  for(const id of Object.keys(FIELDS)){
+    const wrap=document.querySelector(`[data-field="${id}"]`);if(!wrap)continue;
+    wrap.classList.toggle('filled',!!val(id));
+    const hint=$('#h-'+id);if(hint){const o=optOf(id);hint.textContent=o&&o.h?o.h:'';}
+  }
+  (state.mix||[]).forEach((c,i)=>{
+    $('#mix-o-'+i).textContent=c.g?`${c.w} %${c.w>0&&c.w<SPICE?' · специя':''}`:'—';
+    const G=GENRES.find(g=>g.name===c.g);
+    $('#mix-s-'+i).textContent=G?`${G.lo}–${G.hi} BPM · энергия ${fmt(G.en)} · настроение ${fmt(G.val)}${G.h?' · '+G.h:''}`:'';
+  });
+  const tens=tensions();
+  const tl=$('#t-list');tl.replaceChildren();
+  $('#t-count').textContent=tens.length?String(tens.length):'';
+  if(tens.length)tens.forEach(t=>tl.append(h('li',{class:'item'},h('span',{class:'pill tension',text:'напряжение'}),h('p',{text:tensionText(t)}),h('p',{class:'q',text:AX[t.ax].q}))));
+  else tl.append(h('li',{class:'empty',text:heroFilled()>=4?'Столкновений нет: все черты тянут героя в одну сторону, песне не на чем держаться. Поменяй одну черту на противоположную.':'Заполни несколько черт героя: здесь появятся места, где они тянут его в разные стороны.'}));
+  const snd=sound(),lis=listenerIssues(snd);
+  const sb=$('#s-body');sb.replaceChildren();
+  if(snd){
+    sb.append(h('p',{class:'mixline',text:snd.ch.map(c=>`${c.G.name} ${c.pct} %`).join(' + ')}));
+    sb.append(h('p',{class:'tempo',text:snd.tempo.common?`Общий темп ${snd.tempo.lo}–${snd.tempo.hi} BPM`:`Общего темпа нет. Ведёт «${snd.tempo.lead}», ${snd.tempo.lo}–${snd.tempo.hi} BPM`}));
+    sb.append(h('div',{class:'meters'},meter('Энергия','тихо','громко',snd.en),meter('Настроение','темно','светло',snd.val)));
+  }else sb.append(h('p',{class:'empty',text:'Выбери жанры в миксере: здесь появятся общий темп, энергия и конфликты.'}));
+  const sl=$('#s-list');sl.replaceChildren();
+  const all=[...(snd?snd.issues:[]),...lis];
+  if(all.length)all.forEach(x=>sl.append(issueItem(x)));
+  else if(snd)sl.append(issueItem({sev:'ok',text:'Жанры и чувство не спорят. Если хочется пружины, добавь контрастный жанр специей.'}));
+  lastBrief=briefText(tens,snd,lis);
+  $('#brief').textContent=lastBrief;
+  renderGate();
+}
+
+/* ---------- кнопки анкеты ---------- */
+function fillRandom(){
+  readForm();
+  for(const fd of Object.values(FIELDS)){if(fd.options&&!val(fd.id))state.f[fd.id]=pick(fd.options).v;}
+  if(!state.mix.some(c=>c.g)){const a=pick(GENRES);let b=pick(GENRES);while(b===a)b=pick(GENRES);state.mix=[{g:a.name,w:60},{g:b.name,w:40},{g:'',w:0}];}
+  state.example=false;writeForm();render();saveDraft();
+}
+function clearAll(){const prev=clone(state);state=blank();writeForm();render();saveDraft();toast('Анкета очищена',{label:'Вернуть',run:()=>{state=prev;writeForm();render();saveDraft();}});}
+function copyBrief(){
+  const sel=()=>{const r=document.createRange();r.selectNodeContents($('#brief'));const s=getSelection();s.removeAllRanges();s.addRange(r);};
+  try{navigator.clipboard.writeText(lastBrief).then(()=>toast('Бриф скопирован'),()=>{sel();toast('Текст выделен: скопируй его вручную');});}catch(e){sel();toast('Текст выделен: скопируй его вручную');}
+}
+
+/* ---------- Claude: вариант после наброска ---------- */
+let sampleFn=null,ctl=null,lastExpansion='';
+function renderGate(){
+  if(!sampleFn)return;
+  const blocked=!state.sketch.trim()&&!state.skip;
+  $('#gate').hidden=!blocked;
+  $('#b-expand').disabled=blocked||!!ctl;
+}
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function renderMd(el,text){
+  const out=[];let list=null;
+  const inline=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  for(const raw of text.split('\n')){
+    const l=raw.trim();
+    const m=l.match(/^(?:[-*•]|\d+[.)])\s+(.*)$/);
+    if(m){if(!list){list=[];out.push(list);}list.push(m[1]);continue;}
+    list=null;
+    if(!l)continue;
+    const hd=l.match(/^#{1,4}\s+(.*)$/);
+    out.push(hd?{h:hd[1]}:{p:l});
+  }
+  el.innerHTML=out.map(x=>Array.isArray(x)?'<ul>'+x.map(i=>'<li>'+inline(i)+'</li>').join('')+'</ul>':x.h!=null?'<h4>'+inline(x.h)+'</h4>':'<p>'+inline(x.p)+'</p>').join('');
+}
+function prompt(){
+  return `Ты помогаешь автору песен развернуть анкету героя будущей песни. Ниже анкета и, если есть, набросок автора.
+
+Сделай пять разделов, каждый начинай строкой с «## »:
+## Портрет — 120–180 слов. Конкретные, неочевидные детали жизни такого человека в этом месте и в эту эпоху. Без штампов${state.avoid.length?'; отдельно избегай: '+state.avoid.join(', ').toLowerCase():''}.
+## Детали — 8 пунктов списком. У каждой детали в скобках, что она даёт песне: звук, образ, жест или конфликт.
+## Логлайны — 3 пункта. Каждый вырастает из одного столкновения черт в анкете: кто он, какое напряжение, что меняется к концу песни.
+## Заготовки строк — 5 пунктов. Детали, которые могли бы попасть в текст; не рифмуй.
+## Набросок автора — если набросок есть: одна деталь, в которой он сильнее твоего портрета, и одна слепая зона наброска. Если наброска нет, этот раздел пропусти.
+
+Пиши по-русски, без вступлений и выводов. Не пересказывай анкету: ищи то, чего в ней нет.
+
+${lastBrief}${state.sketch.trim()?'':'\n\nНАБРОСОК АВТОРА\n(нет)'}`;
+}
+const ERR={not_granted:'Доступ к Claude для этой страницы не разрешён.',sampling_disabled:'Claude недоступен для этого аккаунта.',rate_limited:'Слишком много запросов. Попробуй через минуту.',session_expired:'Нужно заново войти в claude.ai.',refused:'Claude отказался отвечать на эту анкету. Измени формулировки и попробуй ещё раз.',empty_completion:'Ответ пришёл пустым. Попробуй ещё раз.',prompt_too_large:'Анкета слишком длинная: сократи набросок.',upstream_error:'Связь прервалась. Попробуй ещё раз.'};
+async function expand(fresh){
+  if(!sampleFn||ctl)return;
+  if(!state.sketch.trim()&&!state.skip){renderGate();return;}
+  ctl=new AbortController();
+  const out=$('#c-out');out.replaceChildren();
+  $('#c-mine').hidden=!state.sketch.trim();$('#c-mine-text').textContent=state.sketch.trim();
+  $('#c-status').textContent='Claude думает. Обычно это занимает до минуты.';
+  $('#b-stop').hidden=false;$('#b-again').hidden=true;renderGate();
+  const opts={modelTier:'complex',signal:ctl.signal,onText:({text})=>{$('#c-status').textContent='';renderMd(out,text);}};
+  if(fresh)opts.cache=false;
+  try{
+    const r=await sampleFn(prompt(),opts);
+    lastExpansion=r.text;renderMd(out,r.text);
+    $('#c-status').textContent=r.truncated?'Ответ оборвался. Попробуй ещё раз или сократи анкету.':'';
+    $('#b-again').hidden=false;
+  }catch(e){
+    if(e&&e.text)renderMd(out,e.text);else if(e&&e.code==='refused')out.replaceChildren();
+    const code=e&&e.code;
+    $('#c-status').textContent=code==='cancelled'?'Остановлено.':(ERR[code]||ERR.upstream_error);
+    if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(code)){$('#p-claude').hidden=true;sampleFn=null;}
+  }finally{ctl=null;$('#b-stop').hidden=true;renderGate();}
+}
+
+/* ---------- сохранение для Claude ---------- */
+const TR={а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ё:'e',ж:'zh',з:'z',и:'i',й:'y',к:'k',л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'h',ц:'c',ч:'ch',ш:'sh',щ:'sch',ъ:'',ы:'y',ь:'',э:'e',ю:'yu',я:'ya'};
+function slug(s){return (s||'').toLowerCase().split('').map(c=>TR[c]??c).join('').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'bez-nazvaniya';}
+let db=null;
+function stamp(iso){try{const d=new Date(iso);return d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+', '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+async function saveBrief(){
+  if(!db)return;
+  readForm();
+  const btn=$('#b-save');btn.disabled=true;$('#save-status').textContent='Сохраняю…';
+  const title=state.title.trim()||'Без названия';
+  const body={title,state:{title:state.title,f:state.f,avoid:state.avoid,mix:state.mix,sketch:state.sketch},brief:lastBrief,expansion:lastExpansion||'',savedAt:new Date().toISOString()};
+  try{await db.collection('briefs').doc(slug(title)).set(body);$('#save-status').textContent='Сохранено: «'+title+'»';}
+  catch(e){$('#save-status').textContent=e&&e.code==='quota_exceeded'?'Место для анкет закончилось: удали старые.':'Не сохранилось. Попробуй ещё раз.';}
+  finally{btn.disabled=false;}
+}
+function loadSaved(doc){
+  const d=doc.data();if(!d||!d.state)return;
+  const prev=clone(state);
+  state={...blank(),...d.state,example:false};
+  if(d.expansion){lastExpansion=d.expansion;if(sampleFn){renderMd($('#c-out'),d.expansion);$('#c-mine').hidden=!state.sketch.trim();$('#c-mine-text').textContent=state.sketch.trim();}}
+  writeForm();render();saveDraft();
+  toast('Открыта анкета «'+(d.title||doc.id)+'»',{label:'Вернуть прежнюю',run:()=>{state=prev;writeForm();render();saveDraft();}});
+}
+function renderSaved(snap){
+  const ul=$('#saved');ul.replaceChildren();
+  if(snap.empty){ul.append(h('li',{class:'empty',text:'Сохранённых анкет пока нет.'}));return;}
+  snap.docs.forEach(doc=>{
+    const d=doc.data()||{};
+    const del=h('button',{type:'button',class:'btn-link',text:'Удалить'});
+    let armed=false,t;
+    del.addEventListener('click',async()=>{
+      if(!armed){armed=true;del.textContent='Точно удалить?';t=setTimeout(()=>{armed=false;del.textContent='Удалить';},3000);return;}
+      clearTimeout(t);del.disabled=true;
+      try{await db.collection('briefs').doc(doc.id).delete();}catch(e){del.disabled=false;toast('Не удалилось. Попробуй ещё раз.');}
+    });
+    ul.append(h('li',{},h('span',{},String(d.title||doc.id),' ',h('span',{class:'meta',text:stamp(d.savedAt)})),h('span',{class:'acts'},h('button',{type:'button',class:'btn-link',text:'Открыть',onclick:()=>loadSaved(doc)}),del)));
+  });
+}
+async function initCaps(){
+  const C=window.claude;
+  if(!C||typeof C.use!=='function'){$('#offline').hidden=false;return;}
+  const [s,d,u]=await Promise.all([C.use('sample'),C.use('db'),C.use('user')].map(p=>Promise.resolve(p).catch(()=>null)));
+  if(s){sampleFn=s;$('#p-claude').hidden=false;renderGate();}
+  if(d){
+    db=d;$('#p-save').hidden=false;
+    const canWrite=u?await u.can('data.write').catch(()=>null):null;
+    if(canWrite===false){$('#b-save').disabled=true;$('#save-status').textContent='Сохранять может только владелец страницы.';}
+    const ul=$('#saved');ul.replaceChildren(h('li',{class:'empty',text:'Загружаю сохранённые анкеты…'}));
+    const timer=setTimeout(()=>{ul.replaceChildren(h('li',{class:'empty',text:'Сохранённые анкеты пока не загрузились. Проверь сеть.'}));},10000);
+    db.collection('briefs').orderBy('savedAt','desc').limit(30).onSnapshot(snap=>{if(!snap.metadata.fromCache)clearTimeout(timer);renderSaved(snap);},()=>{clearTimeout(timer);ul.replaceChildren(h('li',{class:'empty',text:'Список анкет недоступен.'}));});
+  }
+  if(!s&&!d)$('#offline').hidden=false;
+}
+
+/* ---------- запуск ---------- */
+buildForm();
+writeForm();
+render();
+$('#f-title').addEventListener('input',onInput);
+$('#f-skip').addEventListener('change',onInput);
+$('#b-random').addEventListener('click',fillRandom);
+$('#b-clear').addEventListener('click',clearAll);
+$('#b-copy').addEventListener('click',copyBrief);
+$('#b-expand').addEventListener('click',()=>expand(false));
+$('#b-again').addEventListener('click',()=>expand(true));
+$('#b-stop').addEventListener('click',()=>ctl&&ctl.abort());
+$('#b-to-sketch').addEventListener('click',()=>{$('#sec-sketch').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});setTimeout(()=>$('#f-sketch').focus({preventScroll:true}),300);});
+$('#b-save').addEventListener('click',saveBrief);
+initCaps();
+</script>
+</body>
+</html>
